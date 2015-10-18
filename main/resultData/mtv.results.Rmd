@@ -1,0 +1,62 @@
+---
+title: "Feature Selection using Cluster Quality Indexes"
+author: "Rafael Ladeira"
+date: "Tuesday, April 14, 2015"
+output: pdf_document
+---
+
+```{r, echo=FALSE}
+suppressWarnings(library(knitr))
+
+load("results.mtv.RData")
+load("results.mtv.Pcirc2bA.RData")
+````
+
+
+\begin{center}
+\Huge Iris
+\end{center}
+```{r, echo=FALSE}
+kable(result.mtv.iris)
+```
+\newpage
+
+\begin{center}
+\Huge Breast Cancer
+\end{center}
+```{r, echo=FALSE}
+kable(result.mtv.breast.cancer)
+```
+\newpage
+
+\begin{center}
+\Huge Gauss3
+\end{center}
+\begin{center}
+Features 1 e 2 são as importantes.
+\end{center}
+```{r, echo=FALSE}
+kable(result.mtv.gauss3)
+```
+\newpage
+
+\begin{center}
+\Huge 2moonsB
+\end{center}
+\begin{center}
+Features 1 e 2 são as importantes e features 6 e 7 são redundantes com a 1 e 2 respectivamente.
+\end{center}
+```{r, echo=FALSE}
+kable(result.mtv.two.moonsB)
+```
+\newpage
+
+\begin{center}
+\Huge Pcirc2bA
+\end{center}
+\begin{center}
+Features 1 e 2 são as importantes e features 9 e 10 são redundantes com a 1 e 2 respectivamente.
+\end{center}
+```{r, echo=FALSE}
+kable(result.mtv.Pcirc2bA)
+```
