@@ -2,14 +2,23 @@
 source(file.path("featureSelectionMethods", "generateFeatureSelectionMethod.R"))
 
 generateFeatureSelectionMethods <- 
-  function(searchMethods, multivariateCriterions) {
+  function(searchMethods,
+           multivariateCriterions,
+           runSearchInParallel = TRUE,
+           ...) {
+    
+    if(is.list(searchMethods) == FALSE ||
+         length(searchMethods) < 1)
+      stop("searchMethods must be a list containing at least one function.")
+    if(is.list(multivariateCriterions) == FALSE ||
+         length(multivariateCriterions) < 1)
+      stop("multivariateCriterions must be a list containing at least one function.")
     
     searchMethodsNames <- names(searchMethods)
     multivariateCriterionsNames <- names(multivariateCriterions)
     
-    combinations <- 
-      expand.grid(searchMethodsNames,
-                  multivariateCriterionsNames)
+    combinations <- expand.grid(searchMethodsNames,
+                                multivariateCriterionsNames)
     
     colnames(combinations) <-
       c("searchMethod", "multivariateCriterion")
@@ -25,7 +34,9 @@ generateFeatureSelectionMethods <-
               featureSelectionMethod <-
                 generateFeatureSelectionMethod(
                   searchMethod,
-                  multivariateCriterion)
+                  multivariateCriterion,
+                  runSearchInParallel = runSearchInParallel,
+                  ...)
               
               return(featureSelectionMethod)
             })
