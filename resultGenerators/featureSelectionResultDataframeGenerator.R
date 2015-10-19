@@ -93,5 +93,5 @@ featureSelectionResultDataframeGenerator <-
     
     resultDataFrame["selectedFeatures"] <- encodedSelectedFeatures
     
-    resultDataFrame
+    return(resultDataFrame)
   }

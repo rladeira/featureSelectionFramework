@@ -4,7 +4,7 @@ source(file.path("resultGenerators", "featureSelectionResultEvaluator.R"))
 source(file.path("resultGenerators", "featureSelectionResultDataframeGenerator.R"))
 source(file.path("utils", "utils.R"))
 
-standardFeatureSelectionResultGenerator <- 
+featureSelectionResultGenerator <- 
   function(dataset,
            featureSelectionMethods,
            assessmentClassifiers,

@@ -1,28 +1,6 @@
 
 source(file.path("searchMethods", "greedy", "greedy.R"))
 
-selectFeaturesWithCriterion <- 
-  function(searchMethod,
-           multivariateCriterion,
-           data,
-           labels,
-           runSearchInParallel = TRUE,
-           ...) {
-    
-    if(is.function(multivariateCriterion) == FALSE)
-      stop("Invalid Argument! multivariateCriterion must be a function")
-    
-    if(is.function(searchMethod) == FALSE)
-      stop("Invalid Argument! searchMethod must be a function")
-    
-    searchMethod(featuresNames = colnames(data), 
-                 multivariateCriterion = multivariateCriterion,
-                 data = data,
-                 labels = labels,
-                 runSearchInParallel = runSearchInParallel,
-                 ...)
-  }
-
 sequentialForwardSelection <- 
   function(featuresNames,
            multivariateCriterion,

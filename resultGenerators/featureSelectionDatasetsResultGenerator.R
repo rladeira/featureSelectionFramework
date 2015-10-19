@@ -1,21 +1,32 @@
 
 library(dplyr)
 
-source(file.path("resultGenerators", "featureSelectionCombinedResultGenerator.R"))
+source(file.path("resultGenerators", "featureSelectionDatasetResultGenerator.R"))
 
-multipleDatasetsFeatureSelectionResultGenerator <-
+featureSelectionDatasetsResultGenerator <-
   function(datasets,
-           searchMethods,
-           multivariateCriterions,
            featureSelectionMethods,
            assessmentClassifiers,
-           runFeatureSelectionWithCritetionsCVInParallel = TRUE,
-           runStandardFeatureSelectionCVInParallel = TRUE,
-           runSearchInParallel = TRUE,
+           runFeatureSelectionCVInParallel = TRUE,
            nFolds = 5) {
     
-    # TODO: Validar tamanho dos vetores de entrada.
-    # Todos devem ter pelo menos um elemento
+    if (is.list(datasets) == FALSE ||
+          length(datasets) < 1)
+      stop("datasets must be a list containing at least one element.")
+    if (is.list(featureSelectionMethods) == FALSE ||
+          length(featureSelectionMethods) < 1)
+      stop("featureSelectionMethods must be a list containing at least one element.")
+    if (is.list(assessmentClassifiers) == FALSE ||
+          length(assessmentClassifiers) < 1)
+      stop("assessmentClassifiers must be a list containing at least one element.")
+    if (is.numeric(nFolds) == FALSE)
+      stop("nFolds must be of numeric type")
+    if (length(nFolds) != 1)
+      stop("nFolds must a numeric vector containing just one element.")
+    if (nFolds < 1)
+      stop("nFolds must be a numeric value greater than one.")
+    if (is.logical(runFeatureSelectionCVInParallel) == FALSE)
+      stop("runFeatureSelectionCVInParallel must be a logical value")
     
     giniOrderedDatasetsResults <- list()
     accOrderedDatasetsResults  <- list()
@@ -26,17 +37,11 @@ multipleDatasetsFeatureSelectionResultGenerator <-
     for (dataset in datasets) {
       
       datasetResult <-
-        featureSelectionCombinedResultGenerator(
+        featureSelectionDatasetResultGenerator(
           dataset = dataset,
-          searchMethods = searchMethods,
-          multivariateCriterions = multivariateCriterions,
           featureSelectionMethods = featureSelectionMethods,
           assessmentClassifiers = assessmentClassifiers,
-          runFeatureSelectionWithCritetionsCVInParallel = 
-            runFeatureSelectionWithCritetionsCVInParallel,
-          runStandardFeatureSelectionCVInParallel = 
-            runStandardFeatureSelectionCVInParallel,
-          runSearchInParallel = runSearchInParallel,
+          runFeatureSelectionCVInParallel = runFeatureSelectionCVInParallel,
           nFolds = nFolds)
       
       giniOrderedDatasetsResults[[dataset$name]] <- datasetResult$giniOrdered
@@ -44,7 +49,7 @@ multipleDatasetsFeatureSelectionResultGenerator <-
       
       datasetsResultsOrderedByName[[dataset$name]] <-
         datasetResult$giniOrdered %>% 
-          arrange(searchMethods, featureSelectionMethods) 
+          arrange(featureSelectionMethods) 
       
       selectedFeaturesDataFrame[[dataset$name]] <-
         datasetsResultsOrderedByName[[dataset$name]]$selectedFeatures
@@ -54,14 +59,11 @@ multipleDatasetsFeatureSelectionResultGenerator <-
           names(datasetResult$selectedFeatures))]
     }
     
-    searchMethods <- datasetsResultsOrderedByName[[1]]$searchMethods
-    
     featureSelectionMethods <- 
       datasetsResultsOrderedByName[[1]]$featureSelectionMethods
     
     selectedFeaturesDataFrame <- 
-      data.frame(searchMethods,
-                 featureSelectionMethods,
+      data.frame(featureSelectionMethods,
                  selectedFeaturesDataFrame)
     
     giniDistances <- sapply(datasetsResultsOrderedByName,
@@ -103,7 +105,6 @@ multipleDatasetsFeatureSelectionResultGenerator <-
                       function(dr) dr$elapsedMinutes))
     
     combinedResult <- data.frame(
-      searchMethod = searchMethods,
       featureSelectionMethod = featureSelectionMethods,
       giniDistanceMean = meanGiniDistances,
       giniDistanceSd = sdGiniDistances,
@@ -119,7 +120,7 @@ multipleDatasetsFeatureSelectionResultGenerator <-
     giniOrderedResult <- list(
       combined = combinedResult %>%
         arrange(giniDistanceMean) %>%
-        dplyr::select(searchMethod, featureSelectionMethod,
+        dplyr::select(featureSelectionMethod,
                       giniDistanceMean, giniDistanceSd,
                       giniMean, giniSd,
                       meanFeaturesFraction, everything()),
@@ -128,7 +129,7 @@ multipleDatasetsFeatureSelectionResultGenerator <-
     accOrderedResult <- list(
       combined = combinedResult %>%
         arrange(accDistanceMean) %>%
-        dplyr::select(searchMethod, featureSelectionMethod,
+        dplyr::select(featureSelectionMethod,
                       accDistanceMean, accDistanceSd,
                       accMean, accSd,
                       meanFeaturesFraction, everything()),
