@@ -42,7 +42,7 @@ datasets = list(bc = mlBenchBreastCancer_,
 clusterIndexesFeatureSelectionMethods <-
   generateFeatureSelectionMethods(
     searchMethods,
-    multivariateCriterion = clusterQualityIndexes,
+    multivariateCriterions = clusterQualityIndexes,
     runSearchInParallel = TRUE)
 
 featureSelectionMethods <-
