@@ -2,7 +2,6 @@
 generateFeatureSelectionMethod <-
   function(searchMethod,
            multivariateCriterion,
-           runSearchInParallel = TRUE,
            ...) {
     
     if(is.function(multivariateCriterion) == FALSE)
@@ -19,7 +18,6 @@ generateFeatureSelectionMethod <-
             multivariateCriterion = multivariateCriterion,
             data = data,
             labels = labels,
-            runSearchInParallel = runSearchInParallel,
             ...)
         
         return(searchResult)

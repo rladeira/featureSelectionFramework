@@ -12,7 +12,7 @@ source(file.path("featureSelectionMethods", "featureSelectionMethods.R"))
 source(file.path("featureSelectionMethods", "generateFeatureSelectionMethods.R"))
 source(file.path("clusterQualityIndexes", "clusterQualityIndexes.R"))
 source(file.path("classifiers", "classifiersWrappers.R"))
-source(file.path("searchMethods", "searchMethods.R"))
+source(file.path("searchMethods", "sequential", "sequentialSearchMethods.R"))
 source(file.path("utils", "utils.R"))
 
 #-----------------------------------------------------------------------
@@ -28,20 +28,24 @@ options(scipen=999)
 ##    - Validar tudo que for possível em todas funções.
 ##    - Refatorar módulo de métodos de busca.
 ##    - Adicionar opção genérica de método de preprocessamento dos dados.
+##    - Gerenciar melhor as dependências das packages escritas para o projeto.
 
-searchMethods = list(SFS = sequentialForwardSelection)
+searchMethods = list(SFS = SFS_featureSelection,
+                     SBE = SBE_featureSelection,
+                     SFFS = SFFS_featureSelection,
+                     SFBE = SFBE_featureSelection)
 
 classifiers = list(LDA = ldaWrapper,
                    linearSVM = linearSVMWrapper,
                    randomForest = randomForestWrapper)
 
-datasets = list(iris = iris_)
+datasets = list(bc = mlBenchBreastCancer_,
+                gauss = gauss3_)
 
 clusterIndexesFeatureSelectionMethods <-
   generateFeatureSelectionMethods(
     searchMethods,
-    multivariateCriterions = clusterQualityIndexes,
-    runSearchInParallel = TRUE)
+    multivariateCriterions = clusterQualityIndexes)
 
 featureSelectionMethods <-
   c(clusterIndexesFeatureSelectionMethods,

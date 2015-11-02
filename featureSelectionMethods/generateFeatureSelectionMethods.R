@@ -4,7 +4,6 @@ source(file.path("featureSelectionMethods", "generateFeatureSelectionMethod.R"))
 generateFeatureSelectionMethods <- 
   function(searchMethods,
            multivariateCriterions,
-           runSearchInParallel = TRUE,
            ...) {
     
     if(is.list(searchMethods) == FALSE ||
@@ -23,6 +22,8 @@ generateFeatureSelectionMethods <-
     colnames(combinations) <-
       c("searchMethod", "multivariateCriterion")
     
+    combinations <- arrange(combinations, searchMethod)
+    
     featureSelectionMethods <-
       apply(combinations, 1,
             function(r) {
@@ -35,7 +36,6 @@ generateFeatureSelectionMethods <-
                 generateFeatureSelectionMethod(
                   searchMethod,
                   multivariateCriterion,
-                  runSearchInParallel = runSearchInParallel,
                   ...)
               
               return(featureSelectionMethod)
