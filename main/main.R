@@ -27,6 +27,7 @@ options(scipen=999)
 ##    - Analisar novamente nomenclatura das funções;
 ##    - Validar tudo que for possível em todas funções.
 ##    - Refatorar módulo de métodos de busca.
+##    - Adicionar opção genérica de método de preprocessamento dos dados.
 
 searchMethods = list(SFS = sequentialForwardSelection)
 
@@ -34,10 +35,7 @@ classifiers = list(LDA = ldaWrapper,
                    linearSVM = linearSVMWrapper,
                    randomForest = randomForestWrapper)
 
-datasets = list(bc = mlBenchBreastCancer_,
-                twoMoons = twoMoonsB_,
-                pcirc2bA_ = pcirc2bA_,
-                gauss = gauss3_)
+datasets = list(iris = iris_)
 
 clusterIndexesFeatureSelectionMethods <-
   generateFeatureSelectionMethods(
