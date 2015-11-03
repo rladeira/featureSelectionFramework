@@ -46,7 +46,7 @@ encodeFeatureSubsetList <- function(featureSubsetList) {
   # order which individual selected subset
   featureSubsetList <- 
     lapply(featureSubsetList,
-           function(f) f[order(f)])
+           function(f) f[order(as.numeric(f))])
   
   # encode feature subset list to be displayed after
   encodeFeatureSubsetListToCharacter(featureSubsetList)
