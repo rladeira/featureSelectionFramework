@@ -1,7 +1,7 @@
 
 library(sequentialSearch)
 
-SFS-FS <- 
+SFS_FS <- 
   function(featuresNames,
            multivariateCriterion,
            data = data,
@@ -20,7 +20,7 @@ SFS-FS <-
     return(result$solution)
   }
 
-SBE-FS <- 
+SBE_FS <- 
   function(featuresNames,
            multivariateCriterion,
            data = data,
@@ -39,7 +39,7 @@ SBE-FS <-
     return(result$solution)
   }
 
-SFFS-FS <- 
+SFFS_FS <- 
   function(featuresNames,
            multivariateCriterion,
            data = data,
@@ -58,7 +58,7 @@ SFFS-FS <-
     return(result$solution)
   }
 
-SFBE-FS <- 
+SFBE_FS <- 
   function(featuresNames,
            multivariateCriterion,
            data = data,

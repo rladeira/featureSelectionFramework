@@ -30,8 +30,8 @@ options(scipen=999)
 ##    - Adicionar opção genérica de método de preprocessamento dos dados.
 ##    - Gerenciar melhor as dependências das packages escritas para o projeto.
 
-searchMethods = list(SFS = SFS-FS,
-                     SFFS = SFFS-FS)
+searchMethods = list(SFS = SFS_FS,
+                     SFFS = SFFS_FS)
 
 classifiers = list(LDA = ldaWrapper,
                    linearSVM = linearSVMWrapper,
