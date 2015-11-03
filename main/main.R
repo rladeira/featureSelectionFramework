@@ -30,16 +30,14 @@ options(scipen=999)
 ##    - Adicionar opção genérica de método de preprocessamento dos dados.
 ##    - Gerenciar melhor as dependências das packages escritas para o projeto.
 
-searchMethods = list(SFS = SFS_featureSelection,
-                     SBE = SBE_featureSelection,
-                     SFFS = SFFS_featureSelection,
-                     SFBE = SFBE_featureSelection)
+searchMethods = list(SFS = SFS-FS,
+                     SFFS = SFFS-FS)
 
 classifiers = list(LDA = ldaWrapper,
                    linearSVM = linearSVMWrapper,
                    randomForest = randomForestWrapper)
 
-datasets = list(bc = mlBenchBreastCancer_)
+datasets = list(leukemia = plsLeukemia_)
 
 clusterIndexesFeatureSelectionMethods <-
   generateFeatureSelectionMethods(
