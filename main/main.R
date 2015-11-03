@@ -8,7 +8,7 @@ library(rDatasets)
 source(file.path("resultGenerators", "featureSelectionDatasetsResultGenerator.R"))
 source(file.path("resultGenerators", "plotSingleDatasetResult.R"))
 source(file.path("resultGenerators", "featureSelectionResultsClustering.R"))
-source(file.path("featureSelectionMethods", "featureSelectionMethods.R"))
+source(file.path("featureSelectionMethods", "FSelectorMethods.R"))
 source(file.path("featureSelectionMethods", "generateFeatureSelectionMethods.R"))
 source(file.path("clusterQualityIndexes", "clusterQualityIndexes.R"))
 source(file.path("classifiers", "classifiersWrappers.R"))
@@ -39,8 +39,7 @@ classifiers = list(LDA = ldaWrapper,
                    linearSVM = linearSVMWrapper,
                    randomForest = randomForestWrapper)
 
-datasets = list(bc = mlBenchBreastCancer_,
-                gauss = gauss3_)
+datasets = list(bc = mlBenchBreastCancer_)
 
 clusterIndexesFeatureSelectionMethods <-
   generateFeatureSelectionMethods(

@@ -89,12 +89,12 @@ selectBestFeatures <- function(featureSelectionMethod,
 
 # function for selecting best features when the FSelector method
 # returns a subset of features
-extractBestFeatures <- function(featureSelectionMethod,
-                                data,
-                                labels){
-  
-  formula <- toFormula(colnames(data))
-  data <- transform(as.data.frame(data), label = labels)
-  
-  featureSelectionMethod(formula, data)
-}
+extractBestFeatures <- 
+  function(featureSelectionMethod,
+           data, labels){
+    
+    formula <- toFormula(colnames(data))
+    data <- transform(as.data.frame(data), label = labels)
+    
+    featureSelectionMethod(formula, data)
+  }
