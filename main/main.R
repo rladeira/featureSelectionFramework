@@ -2,6 +2,7 @@ rm(list = ls())
 
 library(rUtils)
 library(rDatasets)
+library(HandTill2001)
 
 #------------------------ Sources -------------------------------------
 
@@ -30,6 +31,32 @@ options(scipen=999)
 ##    - Adicionar opção genérica de método de preprocessamento dos dados.
 ##    - Gerenciar melhor as dependências das packages escritas para o projeto.
 
+
+computeGini <- function(observed, probabilities) {
+  
+  AUC <- computeAUC(observed, probabilities)
+  gini <- 2*AUC - 1
+  
+  return(gini)
+}
+
+computeAUC <- function(observed, probabilities) { 
+  
+  m <- multcap(observed, probabilities)
+  
+  return(auc(m))
+}
+
+evalResult <- function(observed, classificationResult) {
+  
+  acc <- mean(observed == classificationResult$predictedClasses)
+  gini <- computeGini(observed, classificationResult$probabilities)
+  
+  return(list(acc = acc,
+              gini = gini))
+  
+}
+
 searchMethods = list(SFS = SFS_FS,
                      SFFS = SFFS_FS)
 
@@ -37,7 +64,7 @@ classifiers = list(LDA = ldaWrapper,
                    linearSVM = linearSVMWrapper,
                    randomForest = randomForestWrapper)
 
-datasets = list(leukemia = plsLeukemia_)
+datasets = list(gauss = gauss3_)
 
 clusterIndexesFeatureSelectionMethods <-
   generateFeatureSelectionMethods(
@@ -55,7 +82,8 @@ resultGenerator <- function() {
       datasets = datasets,
       featureSelectionMethods = featureSelectionMethods,
       assessmentClassifiers = classifiers,
-      runFeatureSelectionCVInParallel = FALSE)
+      summaryFunction = evalResult,
+      allowParallel = TRUE)
   
   clusteringResult <<- 
     computeHierarchicalClusteringFor(

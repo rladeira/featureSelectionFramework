@@ -8,8 +8,10 @@ featureSelectionResultGenerator <-
   function(dataset,
            featureSelectionMethods,
            assessmentClassifiers,
-           nFolds = 5,
-           runCrossValidationInParallel = TRUE) {
+           summaryFunction,
+           trainIndexes,
+           testIndexes,
+           allowParallel = TRUE) {
     
     # function to generate feature selection results
     # for all passed methods. The classifiers
@@ -36,11 +38,9 @@ featureSelectionResultGenerator <-
           function() {
             featureSelectionResult <<- 
               selectFeaturesAndAssess(
-                featureSelectionMethod,
-                dataset,
-                assessmentClassifiers,
-                nFolds,
-                runCrossValidationInParallel)
+                featureSelectionMethod, dataset,
+                assessmentClassifiers, summaryFunction,
+                trainIndexes, testIndexes, allowParallel)
           })
         
         featureSelectionResult[["elapsedMinutes"]] <- elapsedSeconds / 60
