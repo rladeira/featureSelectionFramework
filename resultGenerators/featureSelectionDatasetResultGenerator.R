@@ -23,36 +23,24 @@ featureSelectionDatasetResultGenerator <-
         assessmentClassifiers, summaryFunction,
         trainIndexes, testIndexes, allowParallel)
     
-    browser()
-    
-    nFeatures <- ncol(dataset$X)
-    
-    # use dplyr package to add new columns related to efficiency
-    # of each feature selection method
-    featureSelectionDatasetResult$dataFrame <- 
+    resultOrderedByGini <- 
       featureSelectionDatasetResult$dataFrame %>%
-      mutate(featuresFraction = meanSelectedFeaturesNumber / nFeatures)
-    
-    giniOrderedCombinedResult <- 
-      featureSelectionDatasetResult$dataFrame %>%
-      arrange(desc(giniScore)) %>%
+      arrange(desc(mean.giniDesirability)) %>%
       dplyr::select(featureSelectionMethods,
-                    giniScore, giniMean, giniSd,
-                    featuresFraction,
-                    accScore, accMean, accSd,
+                    mean.giniDesirability,
+                    sd.giniDesirability,
                     everything())
     
-    accOrderedCombinedResult <- 
+    resultOrderedByAcc <- 
       featureSelectionDatasetResult$dataFrame %>%
-      arrange(desc(accScore)) %>%
+      arrange(desc(mean.accDesirability)) %>%
       dplyr::select(featureSelectionMethods,
-                    accScore, accMean, accSd,
-                    featuresFraction,
-                    giniScore, giniMean, giniSd, 
+                    mean.accDesirability,
+                    sd.accDesirability,
                     everything())
     
-    return(list(giniOrdered = giniOrderedCombinedResult,
-                accOrdered = accOrderedCombinedResult,
+    return(list(orderedByGini = resultOrderedByGini,
+                orderedByAcc = resultOrderedByAcc,
                 selectedFeaturesSubset = 
                   featureSelectionDatasetResult$selectedFeaturesSubset))
   }

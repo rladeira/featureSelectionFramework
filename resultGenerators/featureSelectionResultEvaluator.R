@@ -36,7 +36,7 @@ computeFeatureSelectionResult <-
            allowParallel = TRUE) {
     
     if (allowParallel) {
-      resampleResult <- 
+      resampleResults <- 
         foreach (resampleIndex = 1:length(trainIndexes)) %dopar% {
           computePerformanceForResampleInstance(
             featureSelectionMethod,
@@ -48,7 +48,7 @@ computeFeatureSelectionResult <-
             resampleIndex)
         }
     } else {
-      resampleResult <-
+      resampleResults <-
         lapply(1:length(trainIndexes),
                function (resampleIndex) {
                  computePerformanceForResampleInstance(
@@ -65,7 +65,7 @@ computeFeatureSelectionResult <-
     
     featureSelectionResult <-
       extractFeatureSelectionResultFrom(
-        resampleResult,
+        resampleResults,
         assessmentClassifiers)
     
     return(featureSelectionResult)
@@ -90,7 +90,9 @@ computePerformanceForResampleInstance <-
     nTotalFeatures <- ncol(dataset$X)
     observedTestLabels <- dataset$Y[testIdx]
     
-    resampleResult <-
+    resampleResult <- list()
+    
+    resampleResult$performance <-
       lapply(assessmentClassifiers,
              function (classifier) {
                
@@ -107,39 +109,41 @@ computePerformanceForResampleInstance <-
                return(classifierPerformanceInfo)
              })
     
-    resampleResult$selectedFeatures = selectedFeatures
+    resampleResult$selectedFeatures <- selectedFeatures
+    resampleResult$metrics <- names(resampleResult$performance[[1]])
     
     return(resampleResult)
   }
 
 extractFeatureSelectionResultFrom <- 
-  function(resampleResult, assessmentClassifiers) {
+  function(resampleResults, assessmentClassifiers) {
     
     featureSelectionResult <- list()
     
     featureSelectionResult$performance <-
-      t(sapply(names(assessmentClassifiers),
-               function (classifierName) {
-                 
-                 classifierPerformanceInfo <- 
-                   t(sapply(resampleResult,
-                            function (resampleResult) {
-                              metricNames <- names(resampleResult[[classifierName]])
-                              metrics <- as.numeric(resampleResult[[classifierName]])
-                              names(metrics) <- metricNames
-                              metrics
-                            }))
-                 
-                 metricsMean <- colMeans(classifierPerformanceInfo)
-                 names(metricsMean) <- paste("mean.", names(metricsMean), sep = "")
-                 metricsSd <- apply(classifierPerformanceInfo, 2, sd)
-                 names(metricsSd) <- paste("sd.", names(metricsSd), sep = "")
-                 
-                 c(metricsMean, metricsSd)
-               }))
+      t(sapply(
+        names(assessmentClassifiers),
+        function (classifierName) {
+          
+          classifierPerformanceInfo <- 
+            t(sapply(resampleResults,
+                     function (resampleResult) {
+                       metricNames <-  names(resampleResult$performance[[classifierName]])
+                       metrics <- as.numeric(resampleResult$performance[[classifierName]])
+                       names(metrics) <- metricNames
+                       metrics
+                     }))
+          
+          metricsMean <- colMeans(classifierPerformanceInfo)
+          names(metricsMean) <- paste("mean.", names(metricsMean), sep = "")
+          metricsSd <- apply(classifierPerformanceInfo, 2, sd)
+          names(metricsSd) <- paste("sd.", names(metricsSd), sep = "")
+          
+          c(metricsMean, metricsSd)
+        }))
     
     featureSelectionResult$selectedFeatures <- 
-      lapply(resampleResult,
+      lapply(resampleResults,
              function (resampleResult) {
                
                featuresSubset <- 
@@ -149,6 +153,10 @@ extractFeatureSelectionResultFrom <-
                checkInstall("sets")
                sets::as.set(featuresSubset)
              })
+    
+    # The evaluation metrics are the same for all resamples, since
+    # all of them come from the summary function.
+    featureSelectionResult$metrics <- resampleResults[[1]]$metrics
     
     return(featureSelectionResult)
   }

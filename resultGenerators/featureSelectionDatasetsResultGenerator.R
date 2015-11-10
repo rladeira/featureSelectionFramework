@@ -43,11 +43,13 @@ featureSelectionDatasetsResultGenerator <-
           assessmentClassifiers, trainIndexes,
           testIndexes, summaryFunction, allowParallel)
       
-      giniOrderedDatasetsResults[[dataset$name]] <- datasetResult$giniOrdered
-      accOrderedDatasetsResults[[dataset$name]] <- datasetResult$accOrdered
+      browser()
+      
+      giniOrderedDatasetsResults[[dataset$name]] <- datasetResult$orderedByGini
+      accOrderedDatasetsResults[[dataset$name]] <- datasetResult$orderedByAcc
       
       datasetsResultsOrderedByName[[dataset$name]] <-
-        datasetResult$giniOrdered %>% 
+        datasetResult$orderedByGini %>% 
           arrange(featureSelectionMethods) 
       
       selectedFeaturesDataFrame[[dataset$name]] <-

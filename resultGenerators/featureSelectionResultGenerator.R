@@ -26,9 +26,14 @@ featureSelectionResultGenerator <-
       lapply(featureSelectionMethodsResult,
              function(r) r$info$selectedFeatures)
     
+    metrics <- featureSelectionMethodsResult[[1]]$info$metrics
+    
+    browser()
+    
     return(list(
       dataFrame = featureSelectionResultDataFrame,
-      selectedFeaturesSubsets = selectedFeaturesSubsets))
+      selectedFeaturesSubsets = selectedFeaturesSubsets,
+      metrics = metrics))
   }
 
 # function to generate feature selection results

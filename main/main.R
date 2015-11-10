@@ -79,7 +79,8 @@ classifiers = list(LDA = ldaWrapper,
                    linearSVM = linearSVMWrapper,
                    randomForest = randomForestWrapper)
 
-datasets = list(gauss = gauss3_)
+datasets = list(iris = iris_,
+                bc = mlBenchBreastCancer_)
 
 clusterIndexesFeatureSelectionMethods <-
   generateFeatureSelectionMethods(
@@ -98,7 +99,7 @@ resultGenerator <- function() {
       featureSelectionMethods = featureSelectionMethods[1:5],
       assessmentClassifiers = classifiers,
       summaryFunction = featureSelectionResultSummary,
-      allowParallel = TRUE)
+      allowParallel = FALSE)
   
   clusteringResult <<- 
     computeHierarchicalClusteringFor(
