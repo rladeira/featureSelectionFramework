@@ -3,6 +3,7 @@ rm(list = ls())
 library(rUtils)
 library(rDatasets)
 library(HandTill2001)
+library(desirability)
 
 #------------------------ Sources -------------------------------------
 
@@ -30,6 +31,7 @@ options(scipen=999)
 ##    - Refatorar módulo de métodos de busca.
 ##    - Adicionar opção genérica de método de preprocessamento dos dados.
 ##    - Gerenciar melhor as dependências das packages escritas para o projeto.
+##    - Usar '_' como substituto a ' '
 
 
 computeGini <- function(observed, probabilities) {
@@ -47,15 +49,28 @@ computeAUC <- function(observed, probabilities) {
   return(auc(m))
 }
 
-evalResult <- function(observed, classificationResult) {
-  
-  acc <- mean(observed == classificationResult$predictedClasses)
-  gini <- computeGini(observed, classificationResult$probabilities)
-  
-  return(list(acc = acc,
-              gini = gini))
-  
-}
+featureSelectionResultSummary <- 
+  function(nSelectedFeatures,
+           nTotalFeatures,
+           observedClasses,
+           classificationResult) {
+    
+    # desirability Function construction
+    d_Metric <- dMax(low = 0, high = 1, scale = 2)
+    d_subsetSize <- dMin(low = 1, high = nTotalFeatures)
+    overall <- dOverall(d_Metric, d_subsetSize)
+    
+    acc <- mean(observedClasses == classificationResult$predictedClasses)
+    gini <- computeGini(observedClasses, classificationResult$probabilities)
+    
+    accDesirability <- predict(overall, data.frame(acc, nSelectedFeatures))
+    giniDesirability <- predict(overall, data.frame(gini, nSelectedFeatures))
+    
+    return(list(giniDesirability = giniDesirability,
+                accDesirability = accDesirability,
+                gini = gini,
+                acc = acc))
+  }
 
 searchMethods = list(SFS = SFS_FS,
                      SFFS = SFFS_FS)
@@ -80,9 +95,9 @@ resultGenerator <- function() {
   result <<- 
     featureSelectionDatasetsResultGenerator(
       datasets = datasets,
-      featureSelectionMethods = featureSelectionMethods,
+      featureSelectionMethods = featureSelectionMethods[1:5],
       assessmentClassifiers = classifiers,
-      summaryFunction = evalResult,
+      summaryFunction = featureSelectionResultSummary,
       allowParallel = TRUE)
   
   clusteringResult <<- 

@@ -2,7 +2,7 @@
 library(foreach)
 
 # This file cointains functions to perform feature selection, and assess
-# the performance using classifiers in a cross validation scenario.
+# the performance using classifiers in each resample iteration.
 
 selectFeaturesAndAssess <- 
   function(featureSelectionMethod,
@@ -85,28 +85,27 @@ computePerformanceForResampleInstance <-
     trainData    <- dataset$X[trainIdx,]
     trainLabels  <- dataset$Y[trainIdx]
     
-    resampleResult <- list()
-    
     selectedFeatures <- featureSelectionMethod(trainData, trainLabels)
+    nSelectedFeatures <- length(selectedFeatures)
+    nTotalFeatures <- ncol(dataset$X)
+    observedTestLabels <- dataset$Y[testIdx]
     
-    nClassifiers <- length(assessmentClassifiers)
-    for (i in 1:nClassifiers) {
-      
-      classifier <- assessmentClassifiers[[i]]
-      classifierName <- names(assessmentClassifiers)[i]
-      
-      classifierPredictionInfo <- 
-        classifier(trainIdx, testIdx,
-                   dataset, selectedFeatures)
-      
-      observedTestLabels <- dataset$Y[testIdx]
-      
-      classifierPerformanceInfo <-
-        summaryFunction(observedTestLabels,
-                        classifierPredictionInfo)
-      
-      resampleResult[[classifierName]] <- classifierPerformanceInfo
-    }
+    resampleResult <-
+      lapply(assessmentClassifiers,
+             function (classifier) {
+               
+               classifierPredictionInfo <- 
+                 classifier(trainIdx, testIdx,
+                            dataset, selectedFeatures)
+               
+               classifierPerformanceInfo <-
+                 summaryFunction(nSelectedFeatures,
+                                 nTotalFeatures,
+                                 observedTestLabels,
+                                 classifierPredictionInfo)
+               
+               return(classifierPerformanceInfo)
+             })
     
     resampleResult$selectedFeatures = selectedFeatures
     
@@ -117,27 +116,29 @@ extractFeatureSelectionResultFrom <-
   function(resampleResult, assessmentClassifiers) {
     
     featureSelectionResult <- list()
-    for (classifierName in names(assessmentClassifiers)) {
-      
-      classifierPerformanceInfo <- 
-        t(sapply(resampleResult,
-                 function (resampleResult) {
-                   resampleResult[[classifierName]]
-                 }))
-      
-      classifierPerformanceInfo <- 
-        apply(classifierPerformanceInfo, 2, as.numeric)
-      
-      classifierPerformance <- 
-        list(accMean = mean(classifierPerformanceInfo[, "acc"]),
-             accSd  = sd(classifierPerformanceInfo[, "acc"]),
-             giniMean = mean(classifierPerformanceInfo[, "gini"]),
-             giniSd = sd(classifierPerformanceInfo[, "gini"]))
-      
-      featureSelectionResult[[classifierName]] <- classifierPerformance                    
-    }
     
-    selectedFeatures <- 
+    featureSelectionResult$performance <-
+      t(sapply(names(assessmentClassifiers),
+               function (classifierName) {
+                 
+                 classifierPerformanceInfo <- 
+                   t(sapply(resampleResult,
+                            function (resampleResult) {
+                              metricNames <- names(resampleResult[[classifierName]])
+                              metrics <- as.numeric(resampleResult[[classifierName]])
+                              names(metrics) <- metricNames
+                              metrics
+                            }))
+                 
+                 metricsMean <- colMeans(classifierPerformanceInfo)
+                 names(metricsMean) <- paste("mean.", names(metricsMean), sep = "")
+                 metricsSd <- apply(classifierPerformanceInfo, 2, sd)
+                 names(metricsSd) <- paste("sd.", names(metricsSd), sep = "")
+                 
+                 c(metricsMean, metricsSd)
+               }))
+    
+    featureSelectionResult$selectedFeatures <- 
       lapply(resampleResult,
              function (resampleResult) {
                
@@ -145,10 +146,9 @@ extractFeatureSelectionResultFrom <-
                  extractSelectedFeaturesIndexesFrom(
                    resampleResult$selectedFeatures)
                
+               checkInstall("sets")
                sets::as.set(featuresSubset)
              })
-    
-    featureSelectionResult$selectedFeatures <- selectedFeatures
     
     return(featureSelectionResult)
   }

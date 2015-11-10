@@ -1,97 +1,75 @@
 
-
 # auxiliary function to assemble a data.frame from
 # feature selection result information
 # In a nutshell, this function converts a list of
 # objects containing the results into an R data.frame.
 featureSelectionResultDataframeGenerator <- 
-  function(featureSelectionInfo, assessmentClassifiers) {
-    
+  function(featureSelectionMethodsResultInfo, assessmentClassifiers) {
+
     allSelectedFeatures <-
-      lapply(featureSelectionInfo,
+      lapply(featureSelectionMethodsResultInfo,
              function (fsMethodInfo) {
                lapply(fsMethodInfo$selectedFeatures,
                       as.character)
              })
     
-    meanSelectedFeaturesNumber <-
-      sapply(allSelectedFeatures,
-             function (selectedFeatures) {
-               mean(sapply(selectedFeatures, length))
-             })
-    
-    meanSelectedFeaturesNumber <-
-      round(meanSelectedFeaturesNumber, 2)
+    sizeMetricsMatrix <-
+      t(sapply(allSelectedFeatures,
+               function (selectedFeatures) {
+                 selectedFeaturesSizes <- sapply(selectedFeatures, length)
+                 selectedFeaturesFractions <- sapply(selectedFeatures, length) / 7
+                 sizeMetrics <- c(mean(selectedFeaturesFractions), mean(selectedFeaturesSizes),
+                                  sd(selectedFeaturesFractions), sd(selectedFeaturesSizes))
+                 names(sizeMetrics) <- c("meanSelectedFeaturesFraction", "meanSelectedFeaturesSize",
+                                         "sdSelectedFeaturesFraction", "sdSelectedFeaturesSize")
+                 sizeMetrics
+               }))
     
     elapsedMinutes <-
-      sapply(featureSelectionInfo,
+      sapply(featureSelectionMethodsResultInfo,
              function (fsMethodInfo) {
                fsMethodInfo$elapsedMinutes
              })
     
-    # construct the data.frame wrapping the solutions
-    resultDataFrame <-
-      data.frame(meanSelectedFeaturesNumber = meanSelectedFeaturesNumber,
-                 elapsedMinutes = elapsedMinutes)
+    individualClassifiersPerformances <-
+      t(sapply(featureSelectionMethodsResultInfo,
+               function (resultInfo) {
+                 checkInstall("gdata")
+                 perforManceVector <- gdata::unmatrix(resultInfo$performance)
+                 odr <- order(names(perforManceVector))
+                 perforManceVector[odr]
+               }))
     
-    nFeatureSelectionMethods <- nrow(resultDataFrame)
-    nClassifiers <- length(assessmentClassifiers)
+    overallClassifiersPerformances <-
+      t(sapply(featureSelectionMethodsResultInfo, 
+               function (resultInfo) {
+                 nColumns <- ncol(resultInfo$performance)
+                 # remove stantard deviation columns
+                 metrics <- resultInfo$performance[, 1:(nColumns/2)]
+                 
+                 metricMeans <- colMeans(metrics)
+                 
+                 metricSds <- apply(metrics, 2, sd)
+                 names(metricSds) <- gsub("mean", "sd", names(metricSds))
+                 
+                 c(metricMeans, metricSds)
+               }))
     
-    accSum    <- numeric(nFeatureSelectionMethods)
-    accSdSum  <- numeric(nFeatureSelectionMethods)
-    giniSum   <- numeric(nFeatureSelectionMethods)
-    giniSdSum <- numeric(nFeatureSelectionMethods)
-    
-    # Add information, related to each one of the classifiers
-    # passed as parameter, to the result data.frame 
-    for (classifierName in names(assessmentClassifiers)) {
-      
-      classifierAccMean <-
-        sapply(featureSelectionInfo,
-               function (fsMethodInfo) {
-                 fsMethodInfo[[classifierName]][["accMean"]]
-               })
-      
-      classifierAccSd <-
-        sapply(featureSelectionInfo,
-               function (fsMethodInfo) {
-                 fsMethodInfo[[classifierName]][["accSd"]]
-               })
-      
-      classifierGiniMean <-
-        sapply(featureSelectionInfo,
-               function (fsMethodInfo) {
-                 fsMethodInfo[[classifierName]][["giniMean"]]
-               })
-      
-      classifierGiniSd <-
-        sapply(featureSelectionInfo,
-               function (fsMethodInfo) {
-                 fsMethodInfo[[classifierName]][["giniSd"]]
-               })
-      
-      accSum <- accSum + classifierAccMean
-      accSdSum <- accSdSum + classifierAccSd
-      giniSum <- giniSum + classifierGiniMean
-      giniSdSum <- giniSdSum + classifierGiniSd
-      
-      resultDataFrame[concatCharacter(classifierName, "_giniMean")] <- classifierGiniMean
-      resultDataFrame[concatCharacter(classifierName, "_giniSd")] <- classifierGiniSd
-      resultDataFrame[concatCharacter(classifierName, "_accMean")] <- classifierAccMean
-      resultDataFrame[concatCharacter(classifierName, "_accSd")] <- classifierAccSd
-    }
-    
-    # compute quantities related to all classifiers and add to
-    # the result data.frame
-    resultDataFrame["giniMean"] <- giniSum / nClassifiers
-    resultDataFrame["giniSd"]   <- giniSdSum / nClassifiers
-    resultDataFrame["accMean"]  <- accSum / nClassifiers
-    resultDataFrame["accSd"]    <- accSdSum  / nClassifiers
-    
+    if (all.equal(names(individualClassifiersPerformances),
+                  names(overallClassifiersPerformances)) == FALSE)
+      stop("mismatch between method names.")
+  
     encodedSelectedFeatures <-
       sapply(allSelectedFeatures, encodeFeatureSubsetList)
     
-    resultDataFrame["selectedFeatures"] <- encodedSelectedFeatures
+    # construct the data.frame wrapping the computed metrics
+    resultDataFrame <-
+      data.frame(featureSelectionMethods = rownames(overallClassifiersPerformances),
+                 sizeMetricsMatrix,
+                 overallClassifiersPerformances,
+                 individualClassifiersPerformances,
+                 elapsedMinutes = elapsedMinutes,
+                 encodedSelectedFeatures)
     
     return(resultDataFrame)
   }

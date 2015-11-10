@@ -31,7 +31,8 @@ featureSelectionDatasetsResultGenerator <-
     
     for (dataset in datasets) {
       
-      trainIndexes <- createResample(dataset$Y, times = 10)
+      trainIndexes <- createResample(dataset$Y, times = 50)
+      # trainIndexes <- createMultiFolds(dataset$Y, times = 5, k = 10)
       testIndexes <- lapply(trainIndexes,
                             function(training, allSamples) allSamples[-unique(training)],
                             allSamples = seq(along = dataset$Y))
