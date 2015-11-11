@@ -2,7 +2,7 @@
 library(dplyr)
 library(caret)
 
-source(file.path("resultGenerators", "featureSelectionDatasetResultGenerator.R"))
+source(file.path("resultGenerators", "featureSelectionResultAggregator.R"))
 
 featureSelectionDatasetsResultGenerator <-
   function(datasets,
@@ -12,45 +12,44 @@ featureSelectionDatasetsResultGenerator <-
            allowParallel = TRUE) {
     
     if (is.list(datasets) == FALSE ||
-          length(datasets) < 1)
+        length(datasets) < 1)
       stop("datasets must be a list containing at least one element.")
     if (is.list(featureSelectionMethods) == FALSE ||
-          length(featureSelectionMethods) < 1)
+        length(featureSelectionMethods) < 1)
       stop("featureSelectionMethods must be a list containing at least one element.")
     if (is.list(assessmentClassifiers) == FALSE ||
-          length(assessmentClassifiers) < 1)
+        length(assessmentClassifiers) < 1)
       stop("assessmentClassifiers must be a list containing at least one element.")
     if (is.logical(allowParallel) == FALSE)
       stop("allowParallel must be a logical value")
     
-    giniOrderedDatasetsResults <- list()
-    accOrderedDatasetsResults  <- list()
-    datasetsResultsOrderedByName <- list()
     selectedFeaturesDataFrame <- list()
     selectedFeaturesSubsets <- list()
+    datasetsResultsOrderedByName <- list()
+    datasetsResults <- list()
     
     for (dataset in datasets) {
       
       trainIndexes <- createResample(dataset$Y, times = 50)
-      # trainIndexes <- createMultiFolds(dataset$Y, times = 5, k = 10)
       testIndexes <- lapply(trainIndexes,
                             function(training, allSamples) allSamples[-unique(training)],
                             allSamples = seq(along = dataset$Y))
-      
       datasetResult <-
-        featureSelectionDatasetResultGenerator(
+        featureSelectionResultAggregator(
           dataset, featureSelectionMethods,
           assessmentClassifiers, trainIndexes,
           testIndexes, summaryFunction, allowParallel)
       
-      browser()
+      orderedByMetrics <- select_vars(names(datasetResult), -selectedFeatures, -metrics)
       
-      giniOrderedDatasetsResults[[dataset$name]] <- datasetResult$orderedByGini
-      accOrderedDatasetsResults[[dataset$name]] <- datasetResult$orderedByAcc
+      for (orderedByMetric in orderedByMetrics) 
+        datasetsResults[[orderedByMetric]][[dataset$name]] <-
+          datasetResult[[orderedByMetric]]
+      
+      metrics <- datasetResult$metrics
       
       datasetsResultsOrderedByName[[dataset$name]] <-
-        datasetResult$orderedByGini %>% 
-          arrange(featureSelectionMethods) 
+        datasetResult[[1]] %>% arrange(featureSelectionMethods) 
       
       selectedFeaturesDataFrame[[dataset$name]] <-
         datasetsResultsOrderedByName[[dataset$name]]$selectedFeatures
@@ -60,6 +59,20 @@ featureSelectionDatasetsResultGenerator <-
           names(datasetResult$selectedFeatures))]
     }
     
+    combinedScores <- 
+      lapply(metrics, 
+             function (metric) {
+               metricScore <- sapply(datasetsResultsOrderedByName,
+                                     function(datasetResult) datasetResult[[metric]])
+               meanMetric <- rowMeans(metricScore)
+               sdMetric <- computeSdFor(metricScore)
+               combinedScore <- cbind(meanMetric, sdMetric)
+               colnames(combinedScore) <- c(metric, gsub("mean", "sd", metric))
+               combinedScore
+             })
+    
+    combinedScores <- Reduce(cbind, combinedScores)
+    
     featureSelectionMethods <- 
       datasetsResultsOrderedByName[[1]]$featureSelectionMethods
     
@@ -67,79 +80,45 @@ featureSelectionDatasetsResultGenerator <-
       data.frame(featureSelectionMethods,
                  selectedFeaturesDataFrame)
     
-    giniScores <- sapply(datasetsResultsOrderedByName,
-                            function(dr) dr$giniScore)
-    
-    meanGiniScores <- rowMeans(giniScores)
-    
-    sdGiniScores <- computeSdFor(giniScores)
-      
-    accScores <- sapply(datasetsResultsOrderedByName,
-                           function(dr) dr$accScore)
-    
-    meanAccScores <- rowMeans(accScores)
-    
-    sdAccScores <- computeSdFor(accScores)
-    
-    meanGiniScores <- 
-      rowMeans(sapply(datasetsResultsOrderedByName,
-                      function(dr) dr$giniMean))
-    
-    sdGiniScores <- 
-      rowMeans(sapply(datasetsResultsOrderedByName,
-                      function(dr) dr$giniSd))
-    
-    meanAccScores <- 
-      rowMeans(sapply(datasetsResultsOrderedByName,
-                      function(dr) dr$giniMean))
-    
-    sdAccScores <- 
-      rowMeans(sapply(datasetsResultsOrderedByName,
-                      function(dr) dr$accSd))
-    
-    meanFeaturesFractions <-
-      rowMeans(sapply(datasetsResultsOrderedByName,
-                      function(dr) dr$featuresFraction))
-    
-    totalElapsedMinutesScores <-
-      rowMeans(sapply(datasetsResultsOrderedByName,
+    totalElapsedMinutes <-
+      rowSums(sapply(datasetsResultsOrderedByName,
                       function(dr) dr$elapsedMinutes))
     
     combinedResult <- data.frame(
       featureSelectionMethod = featureSelectionMethods,
-      giniScoreMean = meanGiniScores,
-      giniScoresd = sdGiniScores,
-      giniMean = meanGiniScores,
-      giniSd = sdGiniScores,
-      accScoreMean = meanAccScores,
-      accScoresd = sdAccScores,
-      accMean = meanAccScores,
-      accSd = sdAccScores,
-      meanFeaturesFraction = meanFeaturesFractions,
-      totalElapsedMinutes = totalElapsedMinutesScores)
+      combinedScores,
+      totalElapsedMinutes = totalElapsedMinutes)
     
-    giniOrderedResult <- list(
-      combined = combinedResult %>%
-        arrange(desc(giniScoreMean)) %>%
-        dplyr::select(featureSelectionMethod,
-                      giniScoreMean, giniScoresd,
-                      giniMean, giniSd,
-                      meanFeaturesFraction, everything()),
-      datasetsResults = giniOrderedDatasetsResults)
+    finalResult <- 
+      lapply(metrics, 
+             function (metric) {
+               metricDesc <- paste("desc(", metric, ")", sep = "")
+               meanMetricIdx <- which(names(combinedResult) == metric)
+               sdMetricIdx <- which(names(combinedResult) == gsub("mean", "sd", metric))
+               
+               orderedCombinedResult <-
+                 combinedResult %>%
+                 arrange_(metricDesc) %>%
+                 dplyr::select(featureSelectionMethod,
+                               meanMetricIdx, sdMetricIdx,
+                               everything())
+               
+               list(combined = orderedCombinedResult,
+                    datasetsResults = datasetsResults[[metric]])
+             })
+    names(finalResult) <- paste("orderedBy", R.utils::capitalize(gsub("mean.", "", metrics)), sep = "")
     
-    accOrderedResult <- list(
-      combined = combinedResult %>%
-        arrange(desc(accScoreMean)) %>%
-        dplyr::select(featureSelectionMethod,
-                      accScoreMean, accScoresd,
-                      accMean, accSd,
-                      meanFeaturesFraction, everything()),
-      datasetsResults = accOrderedDatasetsResults)
+    finalResult$orderedByTotalElapsedMinutes <-
+      combinedResult %>%
+      arrange(totalElapsedMinutes) %>%
+      dplyr::select(featureSelectionMethod,
+                    totalElapsedMinutes,
+                    everything())
     
-    list(orderedByGiniScore = giniOrderedResult,
-         orderedByAccScore  = accOrderedResult,
-         selectedFeaturesDataFrame = selectedFeaturesDataFrame,
-         selectedFeaturesSubsets = selectedFeaturesSubsets)
+    finalResult$selectedFeaturesDataFrame <- selectedFeaturesDataFrame
+    finalResult$selectedFeaturesSubsets <- selectedFeaturesSubsets
+    
+    return(finalResult)
   }
 
 computeSdFor <- function(distances) {

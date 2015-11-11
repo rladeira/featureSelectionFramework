@@ -110,7 +110,7 @@ computePerformanceForResampleInstance <-
              })
     
     resampleResult$selectedFeatures <- selectedFeatures
-    resampleResult$metrics <- names(resampleResult$performance[[1]])
+    resampleResult$summaryMetrics <- names(resampleResult$performance[[1]])
     
     return(resampleResult)
   }
@@ -156,7 +156,7 @@ extractFeatureSelectionResultFrom <-
     
     # The evaluation metrics are the same for all resamples, since
     # all of them come from the summary function.
-    featureSelectionResult$metrics <- resampleResults[[1]]$metrics
+    featureSelectionResult$summaryMetrics <- resampleResults[[1]]$summaryMetrics
     
     return(featureSelectionResult)
   }

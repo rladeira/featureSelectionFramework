@@ -96,10 +96,10 @@ resultGenerator <- function() {
   result <<- 
     featureSelectionDatasetsResultGenerator(
       datasets = datasets,
-      featureSelectionMethods = featureSelectionMethods[1:5],
+      featureSelectionMethods = featureSelectionMethods[1:2],
       assessmentClassifiers = classifiers,
       summaryFunction = featureSelectionResultSummary,
-      allowParallel = FALSE)
+      allowParallel = TRUE)
   
   clusteringResult <<- 
     computeHierarchicalClusteringFor(

@@ -20,8 +20,8 @@ featureSelectionResultDataframeGenerator <-
                  selectedFeaturesFractions <- sapply(selectedFeatures, length) / 7
                  sizeMetrics <- c(mean(selectedFeaturesFractions), mean(selectedFeaturesSizes),
                                   sd(selectedFeaturesFractions), sd(selectedFeaturesSizes))
-                 names(sizeMetrics) <- c("meanSelectedFeaturesFraction", "meanSelectedFeaturesSize",
-                                         "sdSelectedFeaturesFraction", "sdSelectedFeaturesSize")
+                 names(sizeMetrics) <- c("mean.selectedFeaturesFraction", "mean.selectedFeaturesSize",
+                                         "sd.selectedFeaturesFraction", "sd.selectedFeaturesSize")
                  sizeMetrics
                }))
     
@@ -69,7 +69,7 @@ featureSelectionResultDataframeGenerator <-
                  overallClassifiersPerformances,
                  individualClassifiersPerformances,
                  elapsedMinutes = elapsedMinutes,
-                 encodedSelectedFeatures)
+                 selectedFeatures = encodedSelectedFeatures)
     
     return(resultDataFrame)
   }

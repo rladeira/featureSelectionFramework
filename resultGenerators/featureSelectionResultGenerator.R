@@ -22,17 +22,16 @@ featureSelectionResultGenerator <-
       extractDataFrameFrom(featureSelectionMethodsResult,
                            assessmentClassifiers)
     
-    selectedFeaturesSubsets <- 
+    selectedFeatures <- 
       lapply(featureSelectionMethodsResult,
              function(r) r$info$selectedFeatures)
     
-    metrics <- featureSelectionMethodsResult[[1]]$info$metrics
-    
-    browser()
+    metrics <- Filter(function (n) grepl("^mean.*", n),
+                      names(featureSelectionResultDataFrame))
     
     return(list(
       dataFrame = featureSelectionResultDataFrame,
-      selectedFeaturesSubsets = selectedFeaturesSubsets,
+      selectedFeatures = selectedFeatures,
       metrics = metrics))
   }
 
