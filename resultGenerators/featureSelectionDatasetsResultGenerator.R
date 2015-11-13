@@ -9,6 +9,7 @@ featureSelectionDatasetsResultGenerator <-
            featureSelectionMethods,
            assessmentClassifiers,
            summaryFunction,
+           nResamples = 50,
            allowParallel = TRUE) {
     
     if (is.list(datasets) == FALSE ||
@@ -28,9 +29,10 @@ featureSelectionDatasetsResultGenerator <-
     datasetsResultsOrderedByName <- list()
     datasetsResults <- list()
     
+    ## Compute feature selection performance for each of the datasets.
     for (dataset in datasets) {
       
-      trainIndexes <- createResample(dataset$Y, times = 50)
+      trainIndexes <- createResample(dataset$Y, times = nResamples)
       testIndexes <- lapply(trainIndexes,
                             function(training, allSamples) allSamples[-unique(training)],
                             allSamples = seq(along = dataset$Y))
@@ -40,6 +42,8 @@ featureSelectionDatasetsResultGenerator <-
           assessmentClassifiers, trainIndexes,
           testIndexes, summaryFunction, allowParallel)
       
+      ## Extract a data.frame ordered by each metric used to assess the solutions.
+    
       orderedByMetrics <- select_vars(names(datasetResult), -selectedFeatures, -metrics)
       
       for (orderedByMetric in orderedByMetrics) 
@@ -59,6 +63,7 @@ featureSelectionDatasetsResultGenerator <-
           names(datasetResult$selectedFeatures))]
     }
     
+    ## Compute combined metric scores for all the datasets.
     combinedScores <- 
       lapply(metrics, 
              function (metric) {
@@ -70,7 +75,6 @@ featureSelectionDatasetsResultGenerator <-
                colnames(combinedScore) <- c(metric, gsub("mean", "sd", metric))
                combinedScore
              })
-    
     combinedScores <- Reduce(cbind, combinedScores)
     
     featureSelectionMethods <- 
@@ -89,6 +93,8 @@ featureSelectionDatasetsResultGenerator <-
       combinedScores,
       totalElapsedMinutes = totalElapsedMinutes)
     
+    ## Generate a final list containing the combined results 
+    ## ordered by each one the evaluation metrics.
     finalResult <- 
       lapply(metrics, 
              function (metric) {
@@ -104,11 +110,12 @@ featureSelectionDatasetsResultGenerator <-
                                everything())
                
                list(combined = orderedCombinedResult,
-                    datasetsResults = datasetsResults[[metric]])
+                    datasetsResults = datasetsResults[[orderByDescriptionFor(metric)]])
              })
-    names(finalResult) <- paste("orderedBy", R.utils::capitalize(gsub("mean.", "", metrics)), sep = "")
+    names(finalResult) <- orderByDescriptionFor(metrics)
     
-    finalResult$orderedByTotalElapsedMinutes <-
+    ## Add a data.frame ordered by overall time consumption to the result list.
+    finalResult$orderedByTotalElapsedMinutes$combined <-
       combinedResult %>%
       arrange(totalElapsedMinutes) %>%
       dplyr::select(featureSelectionMethod,

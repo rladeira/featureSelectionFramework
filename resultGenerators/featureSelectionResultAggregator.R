@@ -27,6 +27,8 @@ featureSelectionResultAggregator <-
     
     columnNames <- colnames(featureSelectionDatasetResult$dataFrame)
     
+    # format informations related to each performance metric in
+    # a separated data.frame ordered by its respective metric.
     for (metric in featureSelectionDatasetResult$metrics) {
       
       metricName <- gsub("mean.", "", metric)
@@ -46,6 +48,8 @@ featureSelectionResultAggregator <-
                       everything())
     }
     
+    # format a data.frame to present the results ordered by 
+    # the time consumtion of each method.
     aggregatedResult$orderedByElapsedMinutes <-
       featureSelectionDatasetResult$dataFrame %>%
       arrange(elapsedMinutes) %>%
@@ -58,3 +62,7 @@ featureSelectionResultAggregator <-
     
     return(aggregatedResult)
   }
+
+orderByDescriptionFor <- function(metrics) {
+  paste("orderedBy", R.utils::capitalize(gsub("mean.", "", metrics)), sep = "")
+}

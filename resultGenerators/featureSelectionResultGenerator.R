@@ -26,6 +26,8 @@ featureSelectionResultGenerator <-
       lapply(featureSelectionMethodsResult,
              function(r) r$info$selectedFeatures)
     
+    # extract the names of the metrics used to assess
+    # feature selection performance
     metrics <- Filter(function (n) grepl("^mean.*", n),
                       names(featureSelectionResultDataFrame))
     
@@ -36,8 +38,8 @@ featureSelectionResultGenerator <-
   }
 
 # function to generate feature selection results
-# for all passed methods. The classifiers
-# passed as parameters are used to assess
+# for all methods passed as parameters. 
+# The classifiers are used to assess
 # the quality of each solution.
 generateResults <- function(dataset,
                             featureSelectionMethods,
@@ -56,12 +58,11 @@ generateResults <- function(dataset,
     featureSelectionMethodName <- names(featureSelectionMethods)[i]
     
     print(paste("Selecting features using",
-                formatMethodName(featureSelectionMethodName),
+                featureSelectionMethodName,
                 "for dataset",
                 dataset$name))
     
-    # perform the feature selection using the current
-    # method
+    # perform the feature selection using the current method
     elapsedSeconds <- timeOperation( 
       function() {
         featureSelectionResult <<- 
@@ -78,8 +79,7 @@ generateResults <- function(dataset,
     featureSelectionResultInfo <-
       list(featureSelectionMethod = featureSelectionMethodName,
            info = featureSelectionResult)
-    
-    # save the current result in the result's list
+
     featureSelectionMethodsResult[[featureSelectionMethodName]] <-
       featureSelectionResultInfo
   }
@@ -93,7 +93,7 @@ generateResults <- function(dataset,
 extractDataFrameFrom <- 
   function(featureSelectionMethodsResult, assessmentClassifiers) {
 
-    # extract a list containing information 
+    # extract a list containing the information 
     # about the feature selection proccess
     featureSelectionMethodsResultInfo <- 
       lapply(featureSelectionMethodsResult,

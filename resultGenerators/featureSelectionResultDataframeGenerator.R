@@ -6,6 +6,7 @@
 featureSelectionResultDataframeGenerator <- 
   function(featureSelectionMethodsResultInfo, assessmentClassifiers) {
 
+    # Project all selected features subsets.
     allSelectedFeatures <-
       lapply(featureSelectionMethodsResultInfo,
              function (fsMethodInfo) {
@@ -13,6 +14,8 @@ featureSelectionResultDataframeGenerator <-
                       as.character)
              })
     
+    # Extract a matrix containing performance metrics about the number of
+    # features in each solutions.
     sizeMetricsMatrix <-
       t(sapply(allSelectedFeatures,
                function (selectedFeatures) {
@@ -25,12 +28,15 @@ featureSelectionResultDataframeGenerator <-
                  sizeMetrics
                }))
     
+    # Project time consumed by each feature selection method.
     elapsedMinutes <-
       sapply(featureSelectionMethodsResultInfo,
              function (fsMethodInfo) {
                fsMethodInfo$elapsedMinutes
              })
     
+    # Extract a matrix containing performance metrics about each
+    # of the classifiers used to assess the solutions.
     individualClassifiersPerformances <-
       t(sapply(featureSelectionMethodsResultInfo,
                function (resultInfo) {
@@ -40,6 +46,8 @@ featureSelectionResultDataframeGenerator <-
                  perforManceVector[odr]
                }))
     
+    # Extract a matrix containing overall performance metric for
+    # the assessment classifiers.
     overallClassifiersPerformances <-
       t(sapply(featureSelectionMethodsResultInfo, 
                function (resultInfo) {
@@ -54,11 +62,8 @@ featureSelectionResultDataframeGenerator <-
                  
                  c(metricMeans, metricSds)
                }))
-    
-    if (all.equal(names(individualClassifiersPerformances),
-                  names(overallClassifiersPerformances)) == FALSE)
-      stop("mismatch between method names.")
   
+    # Project a vector of encoded feature subsets.
     encodedSelectedFeatures <-
       sapply(allSelectedFeatures, encodeFeatureSubsetList)
     

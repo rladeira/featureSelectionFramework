@@ -1,8 +1,8 @@
 
-library(foreach)
-
 # This file cointains functions to perform feature selection, and assess
 # the performance using classifiers in each resample iteration.
+
+library(foreach)
 
 selectFeaturesAndAssess <- 
   function(featureSelectionMethod,
@@ -92,6 +92,8 @@ computePerformanceForResampleInstance <-
     
     resampleResult <- list()
     
+    # Evaluate the performance related to each classifier
+    # passed as parameter.
     resampleResult$performance <-
       lapply(assessmentClassifiers,
              function (classifier) {
@@ -120,6 +122,9 @@ extractFeatureSelectionResultFrom <-
     
     featureSelectionResult <- list()
     
+    # extract a matrix containing the performance
+    # of the feature selection method from the
+    # list of resample results
     featureSelectionResult$performance <-
       t(sapply(
         names(assessmentClassifiers),
@@ -142,6 +147,7 @@ extractFeatureSelectionResultFrom <-
           c(metricsMean, metricsSd)
         }))
     
+    # Extract the selected features as set objects.
     featureSelectionResult$selectedFeatures <- 
       lapply(resampleResults,
              function (resampleResult) {
@@ -155,7 +161,8 @@ extractFeatureSelectionResultFrom <-
              })
     
     # The evaluation metrics are the same for all resamples, since
-    # all of them come from the summary function.
+    # all of them come from the summary function. So, the first list
+    # is stored.
     featureSelectionResult$summaryMetrics <- resampleResults[[1]]$summaryMetrics
     
     return(featureSelectionResult)
