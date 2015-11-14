@@ -8,7 +8,7 @@ featureSelectionResultSummary <-
            observedClasses,
            classificationResult) {
     
-    # desirability Function construction
+    # desirability function construction
     d_Metric <- dMax(low = 0, high = 1, scale = 2)
     d_subsetSize <- dMin(low = 1, high = nTotalFeatures)
     overall <- dOverall(d_Metric, d_subsetSize)

@@ -2,10 +2,8 @@
 library(rUtils)
 
 # Utility function to help data partitioning
-partition <- function(data,
-                      selectedFeatures,
-                      labels,
-                      trainIndexes,
+partition <- function(data, selectedFeatures,
+                      labels, trainIndexes,
                       testIndexes) {
   
   list(trainData = as.matrix(data[trainIndexes, selectedFeatures]),
@@ -32,11 +30,11 @@ encodeFeatureSubset <- function(featureSubset) {
 
 encodeFeatureSubsetListToCharacter <- function(featureSubsetList) {
   
-  encodedFeatureSubsetList <- 
-    sapply(featureSubsetList,
-           function(featureSubset){
-             encodeFeatureSubset(featureSubset)
-           })
+  encodedFeatureSubsetList <- sapply(
+    featureSubsetList,
+    function(featureSubset){
+      encodeFeatureSubset(featureSubset)
+    })
   
   paste(encodedFeatureSubsetList, collapse=",")
 }
@@ -44,9 +42,9 @@ encodeFeatureSubsetListToCharacter <- function(featureSubsetList) {
 encodeFeatureSubsetList <- function(featureSubsetList) {   
   
   # order which individual selected subset
-  featureSubsetList <- 
-    lapply(featureSubsetList,
-           function(f) f[order(as.numeric(f))])
+  featureSubsetList <- lapply(
+    featureSubsetList,
+    function(f) f[order(as.numeric(f))])
   
   # encode feature subset list to be displayed after
   encodeFeatureSubsetListToCharacter(featureSubsetList)

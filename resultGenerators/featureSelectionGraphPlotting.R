@@ -50,16 +50,9 @@ expandNode <- function(attrEncoding, visited = list()) {
   ))
 }
 
-expansion <- expandNode(rep(0, 10))
-fsEdges <- expansion$edges
-
-G <- make_graph(fsEdges, directed = FALSE)
-plot(G)
-
-
-createFeatureSelectionGraph <- function(size) {
+createFeatureSelectionGraph <- function(nFeatures) {
   
-  startNode <- rep(0, size)
+  startNode <- rep(0, nFeatures)
   visited <- list()
   stack <- rstack()
   stack <- insert_top(stack, startNode)
@@ -85,14 +78,26 @@ createFeatureSelectionGraph <- function(size) {
   return(G)
 }
 
-g <- createFeatureSelectionGraph(size = 10)
+########################## Single node neighborhood ############################################
 
-#plot(g)
+emptyStateEncoding <- rep(0, 10)
+expansion <- expandNode(emptyStateEncoding)
+fsEdges <- expansion$edges
 
-plot(g,
-     vertex.label = NA,
-     vertex.size = 1,
-     layout = layout.circle(g))
+G <- make_graph(fsEdges, directed = FALSE)
+plot(G, vertex.size = 25)
+
+########################## Complete Graph plotting #############################################
+
+G <- createFeatureSelectionGraph(nFeatures = 10)
+
+#plot(G)
+
+plot(G,
+     vertex.label = NA, vertex.size = 1.5,
+     #layout = layout.sphere(g),
+     layout = layout.fruchterman.reingold(G),
+     vertex.color="blue")
 
 
 

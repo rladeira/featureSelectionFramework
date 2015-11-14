@@ -38,27 +38,23 @@ classifiers = list(LDA = ldaWrapper,
 
 datasets = list(iris_, twoMoonsB_)
 
-clusterIndexesFeatureSelectionMethods <-
-  generateFeatureSelectionMethods(
-    searchMethods,
-    multivariateCriterions = clusterQualityIndexes)
+clusterIndexesFeatureSelectionMethods <- generateFeatureSelectionMethods(
+  searchMethods, multivariateCriterions = clusterQualityIndexes)
 
-featureSelectionMethods <-
-  c(featureSelectionMethods,
-    clusterIndexesFeatureSelectionMethods)
+featureSelectionMethods <- c(
+  featureSelectionMethods,
+  clusterIndexesFeatureSelectionMethods)
 
 resultGenerator <- function() {
-  result <<- 
-    featureSelectionDatasetsResultGenerator(
-      datasets = datasets,
-      featureSelectionMethods = featureSelectionMethods[1:5],
-      assessmentClassifiers = classifiers,
-      summaryFunction = featureSelectionResultSummary,
-      allowParallel = TRUE)
+  result <<- featureSelectionDatasetsResultGenerator(
+    datasets = datasets,
+    featureSelectionMethods = featureSelectionMethods[1:5],
+    assessmentClassifiers = classifiers,
+    summaryFunction = featureSelectionResultSummary,
+    allowParallel = TRUE)
   
-  clusteringResult <<- 
-    computeHierarchicalClusteringFor(
-      result$selectedFeaturesSubsets)
+  clusteringResult <<- computeHierarchicalClusteringFor(
+    result$selectedFeaturesSubsets)
 }
 
 elapsedSeconds <- timeOperation(

@@ -1,62 +1,61 @@
 
 library(FSelector)
 
-options( java.parameters = "-Xmx4g" )
+options(java.parameters = "-Xmx4g")
 
-chiSquared <- function(data, labels){
+chiSquared <- function(data, labels) {
   selectBestFeatures(chi.squared, data, labels)
 }
 
-informationGain <- function(data, labels){
+informationGain <- function(data, labels) {
   selectBestFeatures(information.gain, data, labels)
 }
 
-gainRatio <- function(data, labels){
+gainRatio <- function(data, labels) {
   selectBestFeatures(information.gain, data, labels)
 }
 
-symmetricalUncertainty <- function(data, labels){
+symmetricalUncertainty <- function(data, labels) {
   selectBestFeatures(symmetrical.uncertainty, data, labels)
 }
 
-oneR_ <- function(data, labels){
+oneR_ <- function(data, labels) {
   selectBestFeatures(oneR, data, labels)
 }
 
-cfs_ <- function(data, labels, data.fs){
+cfs_ <- function(data, labels, data.fs) {
   extractBestFeatures(cfs, data, labels)
 }
 
-consistency_ <- function(data, labels){
+consistency_ <- function(data, labels) {
   extractBestFeatures(consistency, data, labels)
 }
 
-pearsonCorrelation <- function(data, labels){
+pearsonCorrelation <- function(data, labels) {
   selectBestFeatures(linear.correlation, data, labels)
 }
 
-spearmanCorrelation <- function(data, labels){
+spearmanCorrelation <- function(data, labels) {
   selectBestFeatures(rank.correlation, data, labels)
 }
 
-randomForestImportance = function(data, labels){
+randomForestImportance = function(data, labels) {
   selectBestFeatures(random.forest.importance,
-                     data,
-                     labels,
+                     data, labels,
                      categoricalLabels = TRUE)
 }
 
-featureSelectionMethods <-
-  list(Chi_Squared = chiSquared,
-       Information_Gain = informationGain,
-       Gain_Ratio = gainRatio,
-       Symmetrical_Uncertainty = symmetricalUncertainty,
-       OneR = oneR_,
-       CFS = cfs_,
-       Consistency = consistency_,
-       Pearson_Correlation = pearsonCorrelation,
-       Spearman_Correlation = spearmanCorrelation,
-       RandomForest_Importance = randomForestImportance)
+featureSelectionMethods <- list(
+  Chi_Squared = chiSquared,
+  Information_Gain = informationGain,
+  Gain_Ratio = gainRatio,
+  Symmetrical_Uncertainty = symmetricalUncertainty,
+  OneR = oneR_,
+  CFS = cfs_,
+  Consistency = consistency_,
+  Pearson_Correlation = pearsonCorrelation,
+  Spearman_Correlation = spearmanCorrelation,
+  RandomForest_Importance = randomForestImportance)
 
 
 toFormula <- function(attributes, class = "label") {
@@ -70,9 +69,8 @@ toFormula <- function(attributes, class = "label") {
 # function for selecting best features when the FSelector method
 # returns scores for each one of the features
 selectBestFeatures <- function(featureSelectionMethod,
-                               data,
-                               labels,
-                               categoricalLabels = FALSE){
+                               data, labels,
+                               categoricalLabels = FALSE) {
   
   if(categoricalLabels == FALSE) 
     labels = as.numeric(labels)
@@ -89,12 +87,14 @@ selectBestFeatures <- function(featureSelectionMethod,
 
 # function for selecting best features when the FSelector method
 # returns a subset of features
-extractBestFeatures <- 
-  function(featureSelectionMethod,
-           data, labels){
-    
-    formula <- toFormula(colnames(data))
-    data <- transform(as.data.frame(data), label = labels)
-    
-    featureSelectionMethod(formula, data)
-  }
+extractBestFeatures <- function(featureSelectionMethod,
+                                data, labels){
+  
+  formula <- toFormula(colnames(data))
+  data <- transform(as.data.frame(data), label = labels)
+  
+  featureSelectionMethod(formula, data)
+}
+
+
+

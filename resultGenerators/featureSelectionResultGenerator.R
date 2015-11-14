@@ -4,43 +4,41 @@ source(file.path("resultGenerators", "featureSelectionResultEvaluator.R"))
 source(file.path("resultGenerators", "featureSelectionResultDataframeGenerator.R"))
 source(file.path("utils", "utils.R"))
 
-featureSelectionResultGenerator <- 
-  function(dataset,
-           featureSelectionMethods,
-           assessmentClassifiers,
-           summaryFunction,
-           trainIndexes,
-           testIndexes,
-           allowParallel = TRUE) {
-    
-    featureSelectionMethodsResult <- generateResults(
-      dataset, featureSelectionMethods,
-      assessmentClassifiers, summaryFunction,
-      trainIndexes, testIndexes, allowParallel)
-    
-    featureSelectionResultDataFrame <-
-      extractDataFrameFrom(featureSelectionMethodsResult,
-                           assessmentClassifiers)
-    
-    selectedFeatures <- 
-      lapply(featureSelectionMethodsResult,
-             function(r) r$info$selectedFeatures)
-    
-    # extract the names of the metrics used to assess
-    # feature selection performance
-    metrics <- Filter(function (n) grepl("^mean.*", n),
-                      names(featureSelectionResultDataFrame))
-    
-    return(list(
-      dataFrame = featureSelectionResultDataFrame,
-      selectedFeatures = selectedFeatures,
-      metrics = metrics))
-  }
+featureSelectionResultGenerator <- function(dataset,
+                                            featureSelectionMethods,
+                                            assessmentClassifiers,
+                                            summaryFunction,
+                                            trainIndexes,
+                                            testIndexes,
+                                            allowParallel = TRUE) {
+  
+  featureSelectionMethodsResult <- generateResults(
+    dataset, featureSelectionMethods,
+    assessmentClassifiers, summaryFunction,
+    trainIndexes, testIndexes, allowParallel)
+  
+  featureSelectionResultDataFrame <- extractDataFrameFrom(
+    featureSelectionMethodsResult, assessmentClassifiers)
+  
+  selectedFeatures <- lapply(
+    featureSelectionMethodsResult,
+    function(r) r$info$selectedFeatures)
+  
+  ## extract the names of the metrics used to assess
+  ## feature selection performance
+  metrics <- Filter(function (n) grepl("^mean.*", n),
+                    names(featureSelectionResultDataFrame))
+  
+  return(list(
+    dataFrame = featureSelectionResultDataFrame,
+    selectedFeatures = selectedFeatures,
+    metrics = metrics))
+}
 
-# function to generate feature selection results
-# for all methods passed as parameters. 
-# The classifiers are used to assess
-# the quality of each solution.
+## function to generate feature selection results
+## for all methods passed as parameters. 
+## The classifiers are used to assess
+## the quality of each solution.
 generateResults <- function(dataset,
                             featureSelectionMethods,
                             assessmentClassifiers,
@@ -51,7 +49,7 @@ generateResults <- function(dataset,
   
   featureSelectionMethodsResult <- list()
   
-  # iterate over all feature selection methods
+  ## iterate over all feature selection methods
   for (i in 1:length(featureSelectionMethods)) {
     
     featureSelectionMethod <- featureSelectionMethods[[i]]
@@ -62,24 +60,23 @@ generateResults <- function(dataset,
                 "for dataset",
                 dataset$name))
     
-    # perform the feature selection using the current method
+    ## perform the feature selection using the current method
     elapsedSeconds <- timeOperation( 
       function() {
-        featureSelectionResult <<- 
-          selectFeaturesAndAssess(
-            featureSelectionMethod, dataset,
-            assessmentClassifiers, summaryFunction,
-            trainIndexes, testIndexes, allowParallel)
+        featureSelectionResult <<- selectFeaturesAndAssess(
+          featureSelectionMethod, dataset,
+          assessmentClassifiers, summaryFunction,
+          trainIndexes, testIndexes, allowParallel)
       })
     
     featureSelectionResult[["elapsedMinutes"]] <- elapsedSeconds / 60
     
-    # assemble a list wrapping the information about
-    # the current computed result
-    featureSelectionResultInfo <-
-      list(featureSelectionMethod = featureSelectionMethodName,
-           info = featureSelectionResult)
-
+    ## assemble a list wrapping the information about
+    ## the current computed result
+    featureSelectionResultInfo <- list(
+      featureSelectionMethod = featureSelectionMethodName,
+      info = featureSelectionResult)
+    
     featureSelectionMethodsResult[[featureSelectionMethodName]] <-
       featureSelectionResultInfo
   }
@@ -87,25 +84,23 @@ generateResults <- function(dataset,
   return(featureSelectionMethodsResult)
 }
 
-# function to extract the generated results, and
-# construct a data.frame to summarize and present
-# the solutions of feature selection method.
-extractDataFrameFrom <- 
-  function(featureSelectionMethodsResult, assessmentClassifiers) {
-
-    # extract a list containing the information 
-    # about the feature selection proccess
-    featureSelectionMethodsResultInfo <- 
-      lapply(featureSelectionMethodsResult,
-             function (individualResult) {
-               individualResult$info
-             })
-    
-    resultDataFrame <-
-      featureSelectionResultDataframeGenerator(
-        featureSelectionMethodsResultInfo,
-        assessmentClassifiers)
-    
-    return(resultDataFrame)
-  }
+## function to extract the generated results, and
+## construct a data.frame to summarize and present
+## the solutions of feature selection method.
+extractDataFrameFrom <- function(featureSelectionMethodsResult,
+                                 assessmentClassifiers) {
+  
+  ## extract a list containing the information 
+  ## about the feature selection proccess
+  featureSelectionMethodsResultInfo <- lapply(
+    featureSelectionMethodsResult,
+    function (individualResult) {
+      individualResult$info
+    })
+  
+  resultDataFrame <- featureSelectionResultDataframeGenerator(
+    featureSelectionMethodsResultInfo, assessmentClassifiers)
+  
+  return(resultDataFrame)
+}
 
