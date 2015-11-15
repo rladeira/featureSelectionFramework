@@ -277,13 +277,11 @@ Xie_Beni <- function(data, labels) {
 # The indexes deactived by comments were exposing some type
 # of misbehavior, when applied to feature selection.
 
-clusterQualityIndexes = list(
-  #Ball_Hall = Ball_Hall,
+allClusterQualityIndexes = list(
   Banfeld_Raftery = Banfeld_Raftery,
   C_Index = C_Index,
   Calinski_Harabasz = Calinski_Harabasz,
   Davies_Bouldin = Davies_Bouldin,
-  #Det_Ratio = Det_Ratio,
   Dunn = Dunn,
   Gamma = Gamma,
   G_Plus = G_Plus,
@@ -302,24 +300,18 @@ clusterQualityIndexes = list(
   GDI51 = GDI51,
   GDI52 = GDI52,
   GDI53 = GDI53,
-  #Ksq_Detw = Ksq_Detw,
-  #Log_Det_Ratio = Log_Det_Ratio,
-  #Log_SS_Ratio = Log_SS_Ratio,
   McClain_Rao = McClain_Rao,
-  #PBM = PBM,
-  #Point_Biserial = Point_Biserial,
+  PBM = PBM,
+  Point_Biserial = Point_Biserial,
   Ray_Turi = Ray_Turi,
   Ratkowsky_Lance = Ratkowsky_Lance,
-  #Scott_Symons = Scott_Symons,
   Sd_Scat = Sd_Scat,
-  #Sd_Dis = Sd_Dis,
-  #S_Dbw = S_Dbw,
   Silhouette = Silhouette,
   Tau = Tau,
-  #Trace_W = Trace_W,
-  #Trace_Wib = Trace_Wib,
   Wemmert_Gancarski = Wemmert_Gancarski
-  #Xie_Beni = Xie_Beni
+)
+
+selectedClusterQualityIndexes = list(
 )
 
 #--------- Utility functions for dealing with clusterCrit package --------------
