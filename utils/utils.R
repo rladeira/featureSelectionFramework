@@ -1,17 +1,6 @@
 
 library(rUtils)
 
-# Utility function to help data partitioning
-partition <- function(data, selectedFeatures,
-                      labels, trainIndexes,
-                      testIndexes) {
-  
-  list(trainData = as.matrix(data[trainIndexes, selectedFeatures]),
-       testData  = as.matrix(data[ testIndexes, selectedFeatures]),
-       trainLabels = as.factor(labels[trainIndexes]),
-       testLabels  = as.factor(labels[ testIndexes]))
-}
-
 concatCharacter <- function(ch1, ch2) {
   paste(ch1, ch2, sep = "")
 }

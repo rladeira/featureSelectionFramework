@@ -1,4 +1,3 @@
-
 library(MASS)
 library(e1071)
 library(randomForest)
@@ -27,7 +26,7 @@ ldaWrapper <- function(trainIndexes,
   return(ldaPredictionInfo)
 }
 
-linearSVMWrapper <- function(trainIndexes,
+svmWrapper <- function(trainIndexes,
                              testIndexes,
                              dataset,
                              selectedFeatures) {
@@ -40,7 +39,6 @@ linearSVMWrapper <- function(trainIndexes,
   
   model <- svm(p$trainData,
                p$trainLabels,
-               kernel = "linear",
                probability = TRUE)
   
   predictedClasses <- predict(model, p$testData, probability = TRUE)
@@ -73,5 +71,18 @@ randomForestWrapper <- function(trainIndexes,
                                      probabilities = probabilities)
   
   return(randomForestPredictionInfo)
+}
+
+# Utility function for helping in data partitioning
+partition <- function(data,
+                      selectedFeatures,
+                      labels,
+                      trainIndexes,
+                      testIndexes) {
+  
+  list(trainData = as.matrix(data[trainIndexes, selectedFeatures]),
+       testData  = as.matrix(data[ testIndexes, selectedFeatures]),
+       trainLabels = as.factor(labels[trainIndexes]),
+       testLabels  = as.factor(labels[ testIndexes]))
 }
 

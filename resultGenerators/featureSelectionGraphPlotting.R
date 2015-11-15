@@ -3,18 +3,18 @@ library(igraph)
 library(rstackdeque)
 
 extractNeighbors <- function(attrEncoding) {
-  neighbors <-
-    lapply(1:length(attrEncoding),
-           function (i) {
-             neighbor <- attrEncoding
-             if (attrEncoding[i] == 1) {
-               neighbor[i] <- 0
-               return(neighbor)
-             } else {
-               neighbor[i] <- 1
-               return(neighbor)
-             }
-           })
+  neighbors <- lapply(
+    1:length(attrEncoding),
+    function (i) {
+      neighbor <- attrEncoding
+      if (attrEncoding[i] == 1) {
+        neighbor[i] <- 0
+        return(neighbor)
+      } else {
+        neighbor[i] <- 1
+        return(neighbor)
+      }
+    })
   
   return(neighbors)
 }
@@ -94,7 +94,8 @@ G <- createFeatureSelectionGraph(nFeatures = 10)
 #plot(G)
 
 plot(G,
-     vertex.label = NA, vertex.size = 1.5,
+     vertex.label = NA,
+     vertex.size = 1.5,
      #layout = layout.sphere(g),
      layout = layout.fruchterman.reingold(G),
      vertex.color="blue")

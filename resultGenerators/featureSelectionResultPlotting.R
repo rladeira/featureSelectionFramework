@@ -58,9 +58,9 @@ boxplotsForAllMetrics <- function (result) {
       ggtitle(metric) 
     
     print(p)
-    
-    return(p)
   }
+  
+  return(invisible())
 }
 
 
