@@ -11,13 +11,12 @@ generateFeatureSelectionMethod <- function(searchMethod,
   featureSelectionMethod <- 
     function(data, labels, ...) {
       
-      searchResult <-
-        searchMethod(
-          featuresNames = colnames(data), 
-          multivariateCriterion = multivariateCriterion,
-          data = data,
-          labels = labels,
-          ...)
+      searchResult <- searchMethod(
+        featuresNames = colnames(data), 
+        multivariateCriterion = multivariateCriterion,
+        data = data,
+        labels = labels,
+        ...)
       
       return(searchResult)
     }

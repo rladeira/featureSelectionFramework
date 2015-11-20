@@ -25,9 +25,9 @@ ldaWrapper <- function(trainIndexes,
 }
 
 svmWrapper <- function(trainIndexes,
-                             testIndexes,
-                             dataset,
-                             selectedFeatures) {
+                       testIndexes,
+                       dataset,
+                       selectedFeatures) {
   
   p <- partition(scale(dataset$X),
                  selectedFeatures,
