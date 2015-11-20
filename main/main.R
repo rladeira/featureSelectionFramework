@@ -14,6 +14,7 @@ source(file.path("clusterQualityIndexes", "clusterQualityIndexes.R"))
 source(file.path("assessment", "classifiers", "classifiersWrappers.R"))
 source(file.path("assessment", "metrics", "classificationMetrics.R"))
 source(file.path("searchMethods", "sequential", "sequentialSearchMethods.R"))
+source(file.path("utils", "syntheticBases.R"))
 source(file.path("utils", "utils.R"))
 
 #-----------------------------------------------------------------------
@@ -21,25 +22,21 @@ source(file.path("utils", "utils.R"))
 # remove scientific notation from double printing
 options(scipen = 999)
 
-searchMethods = list(SFS = sfs_fs,
-                     SFFS = sffs_fs)
+searchMethods = list(SFS = sfs_fs)
 
 classifiers = list(LDA = ldaWrapper,
                    svm = svmWrapper,
                    randomForest = randomForestWrapper)
 
-datasets = list(iris_, twoMoonsB_)
-
 clusterIndexesFeatureSelectionMethods <- generateFeatureSelectionMethods(
-  searchMethods, multivariateCriterions = clusterQualityIndexes)
+  searchMethods, multivariateCriterions = allClusterQualityIndexes)
 
 featureSelectionMethods <- c(
-  featureSelectionMethods,
   clusterIndexesFeatureSelectionMethods)
 
 resultGenerator <- function() {
   result <<- featureSelectionDatasetsResultGenerator(
-    datasets = datasets,
+    datasets = syntheticDatasets(),
     featureSelectionMethods = featureSelectionMethods,
     assessmentClassifiers = classifiers,
     summaryFunction = featureSelectionResultSummary,
@@ -58,7 +55,5 @@ barplotForElapsedMinutes(result)
 boxplotsForAllMetrics(result)
 
 print(paste("Elapsed:", elapsedSeconds / 60, "minutes"))
-
-
 
 

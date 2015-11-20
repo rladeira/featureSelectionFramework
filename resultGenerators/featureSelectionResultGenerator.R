@@ -63,10 +63,12 @@ generateResults <- function(dataset,
     ## perform the feature selection using the current method
     elapsedSeconds <- timeOperation( 
       function() {
-        featureSelectionResult <<- selectFeaturesAndAssess(
-          featureSelectionMethod, dataset,
-          assessmentClassifiers, summaryFunction,
-          trainIndexes, testIndexes, allowParallel)
+        loopUntilDone( function () {
+          featureSelectionResult <<- selectFeaturesAndAssess(
+            featureSelectionMethod, dataset,
+            assessmentClassifiers, summaryFunction,
+            trainIndexes, testIndexes, allowParallel)
+        })
       })
     
     featureSelectionResult[["elapsedMinutes"]] <- elapsedSeconds / 60

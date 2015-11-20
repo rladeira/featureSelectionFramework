@@ -2,8 +2,6 @@ library(MASS)
 library(e1071)
 library(randomForest)
 
-source(file.path("utils", "utils.R"))
-
 ldaWrapper <- function(trainIndexes,
                        testIndexes,
                        dataset,

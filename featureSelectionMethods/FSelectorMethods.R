@@ -46,8 +46,8 @@ randomForestImportance = function(data, labels) {
 }
 
 featureSelectionMethods <- list(
-  Chi_Squared = chiSquared,
   Information_Gain = informationGain,
+  Chi_Squared = chiSquared,
   Gain_Ratio = gainRatio,
   Symmetrical_Uncertainty = symmetricalUncertainty,
   OneR = oneR_,

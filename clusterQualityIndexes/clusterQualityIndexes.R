@@ -308,11 +308,28 @@ allClusterQualityIndexes = list(
   Sd_Scat = Sd_Scat,
   Silhouette = Silhouette,
   Tau = Tau,
-  Wemmert_Gancarski = Wemmert_Gancarski
-)
+  Wemmert_Gancarski = Wemmert_Gancarski)
 
+# Cluster quality indexes which have achieved more
+# than 0.99 score in the experiment containing
+# easy synthetic datasets for feature selection.
 selectedClusterQualityIndexes = list(
-)
+  Calinski_Harabasz = Calinski_Harabasz,
+  Davies_Bouldin = Davies_Bouldin,
+  GDI12 = GDI12,
+  GDI13 = GDI13,
+  GDI22 = GDI22,
+  GDI23 = GDI23,
+  GDI32 = GDI32,
+  GDI33 = GDI33,
+  GDI42 = GDI42,
+  GDI43 = GDI43,
+  McClain_Rao = McClain_Rao,
+  Ray_Turi = Ray_Turi,
+  Ratkowsky_Lance = Ratkowsky_Lance,
+  Sd_Scat = Sd_Scat,
+  Silhouette = Silhouette,
+  Wemmert_Gancarski = Wemmert_Gancarski)
 
 #--------- Utility functions for dealing with clusterCrit package --------------
 
