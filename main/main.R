@@ -51,6 +51,8 @@ elapsedSeconds <- timeOperation(
     runWithCpuParallelBackend(resultGenerator)
   })
 
+load(file.path("main", "resultData", "syntheticDatasetsResult.RData"))
+
 barplotForElapsedMinutes(result)
 boxplotsForAllMetrics(result)
 

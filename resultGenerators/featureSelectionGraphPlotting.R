@@ -80,25 +80,36 @@ createFeatureSelectionGraph <- function(nFeatures) {
 
 ########################## Single node neighborhood ############################################
 
-emptyStateEncoding <- rep(0, 10)
-expansion <- expandNode(emptyStateEncoding)
-fsEdges <- expansion$edges
-
-G <- make_graph(fsEdges, directed = FALSE)
-plot(G, vertex.size = 25)
+# emptyStateEncoding <- rep(0, 10)
+# expansion <- expandNode(emptyStateEncoding)
+# fsEdges <- expansion$edges
+# 
+# G <- make_graph(fsEdges, directed = FALSE)
+# plot(G, vertex.size = 25)
 
 ########################## Complete Graph plotting #############################################
 
-G <- createFeatureSelectionGraph(nFeatures = 10)
+plotFeatureSelectionGraph <- function(nFeatures) {
+  
+  G <- createFeatureSelectionGraph(nFeatures)
+  
+  plot(G,
+       vertex.label = NA,
+       vertex.size = 1.5,
+       #layout = layout.sphere(g),
+       layout = layout.fruchterman.reingold(G),
+       vertex.color="blue",
+       main = paste(nFeatures, "características"))
+}
 
-#plot(G)
+par(mfrow=c(2,2))
+par(cex.main=3)
 
-plot(G,
-     vertex.label = NA,
-     vertex.size = 1.5,
-     #layout = layout.sphere(g),
-     layout = layout.fruchterman.reingold(G),
-     vertex.color="blue")
+plotFeatureSelectionGraph(nFeatures = 2)
+plotFeatureSelectionGraph(nFeatures = 4)
+plotFeatureSelectionGraph(nFeatures = 8)
+plotFeatureSelectionGraph(nFeatures = 12)
+
 
 
 
