@@ -160,7 +160,7 @@ plotSyntheticDatasets <- function(syntheticDatasets) {
          xlab = "feature1",
          ylab = "feature2",
          zlab = "feature3",
-         size = 8,
+         size = 4,
          col = brewer.pal(3, "Dark2")[unclass(syntheticDatasets[[3]]$Y)])
   
 }
