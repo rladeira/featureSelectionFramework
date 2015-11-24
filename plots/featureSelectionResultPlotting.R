@@ -1,6 +1,7 @@
 
 library(reshape2)
 library(ggplot2)
+library(dplyr)
 
 barplotForElapsedMinutes <- function (result) {
   
@@ -14,19 +15,21 @@ barplotForElapsedMinutes <- function (result) {
     data$featureSelectionMethod,
     levels = levels(data$featureSelectionMethod)[fsOrdering])   
   
-  ggplot(data, aes(x = featureSelectionMethods, y = totalElapsedMinutes)) +
+  p <- ggplot(data, aes(x = featureSelectionMethods, y = totalElapsedMinutes)) +
     geom_bar(stat = "identity") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12)) +
-    xlab("Feature Selection Method") + ylab("Total Elapsed Minutes") +
-    ggtitle("Elapsed Time for each Feature Selection Method") 
+    xlab("feature selection method") + ylab("execution Time (minutes) ")
+  
+  print(p)
+  
+  return(p)
 }
 
 boxplotsForAllMetrics <- function (result) {
   
   metrics <- Filter(function (m) grepl("^mean.", m), names(result[[1]]$combined))
   
-  featureSelectionMethodNames <- sort(
-    as.character(result[[1]]$combined$featureSelectionMethod))
+  plots <- list()
   
   for (metric in metrics) {
     
@@ -34,9 +37,10 @@ boxplotsForAllMetrics <- function (result) {
       result[[1]]$datasetsResults,
       function (datasetResult) {
         datasetResult <- datasetResult %>% arrange(featureSelectionMethods)
-        datasetResult[[metric]]
+        metricValues <- datasetResult[, metric]
+        names(metricValues) <- datasetResult$featureSelectionMethods
+        metricValues
       })
-    rownames(metricDataFrame) <- featureSelectionMethodNames
     
     meltedMetrics <- melt(metricDataFrame)
     meltedMetrics <- meltedMetrics %>% dplyr::select(Var1, value) %>% arrange(Var1)
@@ -45,7 +49,7 @@ boxplotsForAllMetrics <- function (result) {
     fsOrdering <- order(as.numeric(
       by(meltedMetrics$values,
          meltedMetrics$featureSelectionMethods,
-         median)))   
+         mean)))   
     
     meltedMetrics$featureSelectionMethods <- ordered(
       meltedMetrics$featureSelectionMethods,
@@ -54,16 +58,15 @@ boxplotsForAllMetrics <- function (result) {
     p <- qplot(featureSelectionMethods, values,
                data = meltedMetrics, geom = "boxplot") +
       theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12)) +
-      xlab("Feature Selection Method") + ylab(metric) +
-      ggtitle(metric) 
+      xlab("feature selection method") +
+      ylab(metric) +
+      ggtitle(metric)
     
     print(p)
+    plots <- c(plots, p)
   }
   
-  return(invisible())
+  return(plots)
 }
-
-
-
 
 
