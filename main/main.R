@@ -54,7 +54,9 @@ elapsedSeconds <- timeOperation(
 load(file.path("main", "resultData", "syntheticDatasetsResult.RData"))
 
 timePlot <- barplotForElapsedMinutes(result)
-metricPlots <- boxplotsForAllMetrics(result)
+metricsPlots <- boxplotsForAllMetrics(result)
+
+addCustomDescriptionToPlots(timePlot, metricsPlots)
 
 print(paste("Elapsed:", elapsedSeconds / 60, "minutes"))
 

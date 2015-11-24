@@ -18,7 +18,7 @@ barplotForElapsedMinutes <- function (result) {
   p <- ggplot(data, aes(x = featureSelectionMethods, y = totalElapsedMinutes)) +
     geom_bar(stat = "identity") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12)) +
-    xlab("feature selection method") + ylab("execution Time (minutes) ")
+    xlab("Feature selection method") + ylab("Execution Time (minutes) ")
   
   print(p)
   
@@ -63,10 +63,48 @@ boxplotsForAllMetrics <- function (result) {
       ggtitle(metric)
     
     print(p)
-    plots <- c(plots, p)
+    plots[[metric]] <- p
   }
   
   return(plots)
+}
+
+addCustomDescriptionToPlots <- function(timePlot, metricsPlots) {
+  
+  timePlot <- timePlot +
+    xlab("Métodos de seleção de características") +
+    ylab("Tempo de execução (minutos)") +
+    ggtitle("")
+  
+  print(timePlot)
+  
+  giniDesirabilityPlot <- metricsPlots[[3]]
+  giniDesirabilityPlot <- giniDesirabilityPlot +
+    xlab("Métodos de seleção de características") +
+    ylab("Gini Index desirability score") +
+    ggtitle("")
+  print(giniDesirabilityPlot)
+  
+  accDesirabilityPlot <- metricsPlots[[4]]
+  accDesirabilityPlot <- accDesirabilityPlot +
+    xlab("Métodos de seleção de características") +
+    ylab("Acurácia desirability score") +
+    ggtitle("")
+  print(accDesirabilityPlot)
+  
+  giniPlot <- metricsPlots[[5]]
+  giniPlot <- giniPlot +
+    xlab("Métodos de seleção de características") +
+    ylab("Gini Index")  +
+    ggtitle("")
+  print(giniPlot)
+  
+  accPlot <- metricsPlots[[6]]
+  accPlot <- accPlot +
+    xlab("Métodos de seleção de características") +
+    ylab("Acurácia")  +
+    ggtitle("")
+  print(accPlot)
 }
 
 
