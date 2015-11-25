@@ -8,6 +8,7 @@ library(rDatasets)
 source(file.path("resultGenerators", "featureSelectionDatasetsResultGenerator.R"))
 source(file.path("resultGenerators", "featureSelectionResultsClustering.R"))
 source(file.path("plots", "featureSelectionResultPlotting.R"))
+source(file.path("plots", "dendrogramPlot.R"))
 source(file.path("featureSelectionMethods", "FSelectorMethods.R"))
 source(file.path("featureSelectionMethods", "generateFeatureSelectionMethods.R"))
 source(file.path("clusterQualityIndexes", "clusterQualityIndexes.R"))
@@ -58,6 +59,7 @@ metricsPlots <- boxplotsForAllMetrics(result)
 
 addCustomDescriptionToPlots(timePlot, metricsPlots)
 
-print(paste("Elapsed:", elapsedSeconds / 60, "minutes"))
+plotDendrogram(clusteringResult$hclust)
 
+print(paste("Elapsed:", elapsedSeconds / 60, "minutes"))
 

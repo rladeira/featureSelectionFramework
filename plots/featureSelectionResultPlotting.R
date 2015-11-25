@@ -18,7 +18,10 @@ barplotForElapsedMinutes <- function (result) {
   p <- ggplot(data, aes(x = featureSelectionMethods, y = totalElapsedMinutes)) +
     geom_bar(stat = "identity") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12)) +
-    xlab("Feature selection method") + ylab("Execution Time (minutes) ")
+    xlab("Feature selection method") + ylab("Execution Time (minutes) ") +
+    theme(axis.text.x = element_text(size = 16.5),
+          axis.text = element_text(size = 20),
+          axis.title = element_text(size = 25, face = "bold"))
   
   print(p)
   
@@ -60,7 +63,10 @@ boxplotsForAllMetrics <- function (result) {
       theme(axis.text.x = element_text(angle = 90, hjust = 1, size = 12)) +
       xlab("feature selection method") +
       ylab(metric) +
-      ggtitle(metric)
+      ggtitle(metric) +
+      theme(axis.text.x = element_text(size = 16.5),
+            axis.text = element_text(size = 20),
+            axis.title = element_text(size = 25, face = "bold"))
     
     print(p)
     plots[[metric]] <- p
@@ -79,10 +85,15 @@ addCustomDescriptionToPlots <- function(timePlot, metricsPlots) {
   print(timePlot)
   
   giniDesirabilityPlot <- metricsPlots[[3]]
-  giniDesirabilityPlot <- giniDesirabilityPlot +
+  
+  giniDesirabilityPlot <- 
+    giniDesirabilityPlot +
     xlab("Métodos de seleção de características") +
     ylab("Gini Index desirability score") +
-    ggtitle("")
+    ggtitle("") +
+    geom_hline(yintercept = 0.99, linetype = 2, color = "red") +
+    geom_vline(xintercept = 15.5, linetype = 2,color = "blue")
+  
   print(giniDesirabilityPlot)
   
   accDesirabilityPlot <- metricsPlots[[4]]
@@ -103,7 +114,8 @@ addCustomDescriptionToPlots <- function(timePlot, metricsPlots) {
   accPlot <- accPlot +
     xlab("Métodos de seleção de características") +
     ylab("Acurácia")  +
-    ggtitle("")
+    ggtitle("") 
+  
   print(accPlot)
 }
 

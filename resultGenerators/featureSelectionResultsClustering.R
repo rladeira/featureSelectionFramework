@@ -33,7 +33,6 @@ computeHierarchicalClusteringFor <- function(selectedFeatureSubsets) {
         })
   
   hc <- hclust(as.dist(distanceMatrix))
-  plot(hc)
   
   return(list(
     hclust = hc,
