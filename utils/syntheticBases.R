@@ -1,9 +1,9 @@
 
-library(ggplot2)
-library(rgl)
-library(RColorBrewer)
+## File with the definitions of some synthetic datasets, which are
+## easy for feature selection tasks. All classes distributions all
+## well separated.
 
-syntheticDatasets <- function() {
+easySyntheticDatasets <- function() {
   
   ################################ Synthetic Dataset 1 ####################################
   
@@ -138,31 +138,10 @@ syntheticDatasets <- function() {
     }
   )
   
-  syntheticDatasets <- list(
+  easySyntheticDatasets <- list(
     noisyDataset1 = noisyDataset1_,
     noisyDataset2 = noisyDataset2_,
     noisyDataset3 = noisyDataset3_,
     multicollinearDataset1 = multicollinearDataset1_,
     multicollinearDataset2 = multicollinearDataset2_)
 }
-
-plotSyntheticDatasets <- function(syntheticDatasets) {
-  
-  p1 <- ggplot(syntheticDatasets[[1]]$data(), aes(x = feature1))
-  print(p1 + geom_density())
-  
-  p2 <- ggplot(syntheticDatasets[[2]]$data(), aes(feature1, feature2))
-  print(p2 + geom_point(aes(colour = Y)))
-  
-  plot3d(syntheticDatasets[[3]]$X$feature1,
-         syntheticDatasets[[3]]$X$feature2,
-         syntheticDatasets[[3]]$X$feature3,
-         xlab = "feature1",
-         ylab = "feature2",
-         zlab = "feature3",
-         size = 4,
-         col = brewer.pal(3, "Dark2")[unclass(syntheticDatasets[[3]]$Y)])
-  
-}
-
-plotSyntheticDatasets(syntheticDatasets())

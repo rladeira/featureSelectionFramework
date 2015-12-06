@@ -23,21 +23,51 @@ source(file.path("utils", "utils.R"))
 # remove scientific notation from double printing
 options(scipen = 999)
 
-searchMethods = list(SFS = sfs_fs)
+searchMethods = list(SFS = sfs_fs,
+                     SFFS = sffs_fs)
 
 classifiers = list(LDA = ldaWrapper,
                    svm = svmWrapper,
                    randomForest = randomForestWrapper)
 
 clusterIndexesFeatureSelectionMethods <- generateFeatureSelectionMethods(
-  searchMethods, multivariateCriterions = allClusterQualityIndexes)
+  searchMethods, multivariateCriterions = selectedClusterQualityIndexes)
 
 featureSelectionMethods <- c(
+  fSelectorMethods,
   clusterIndexesFeatureSelectionMethods)
+
+datasets <- list(breastCancer_#,
+#                  cassini_,
+#                  circle_,
+#                  cuboids_,
+#                  dna_,
+#                  gaussian_,
+#                  glass_,
+#                  houseVotes84_,
+#                  hypercube_,
+#                  ionosphere_,
+#                  ringnorm_,
+#                  satellite_,
+#                  shapes_,
+#                  simplex_,
+#                  smiley_,
+#                  sonar_,
+#                  spamBase_,
+#                  spirals_,
+#                  steelPlatesFaults_,
+#                  threeNorm_,
+#                  titanic_,
+#                  twoMoons_,
+#                  twoNorm_,
+#                  vehicle_,
+#                  waveform_,
+#                  xorDataSet_
+                 )
 
 resultGenerator <- function() {
   result <<- featureSelectionDatasetsResultGenerator(
-    datasets = syntheticDatasets(),
+    datasets = datasets,
     featureSelectionMethods = featureSelectionMethods,
     assessmentClassifiers = classifiers,
     summaryFunction = featureSelectionResultSummary,
@@ -51,8 +81,6 @@ elapsedSeconds <- timeOperation(
   function() {
     runWithCpuParallelBackend(resultGenerator)
   })
-
-load(file.path("main", "resultData", "syntheticDatasetsResult.RData"))
 
 timePlot <- barplotForElapsedMinutes(result)
 metricsPlots <- boxplotsForAllMetrics(result)

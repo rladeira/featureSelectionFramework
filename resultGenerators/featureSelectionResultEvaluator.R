@@ -48,6 +48,9 @@ computeFeatureSelectionResult <- function(dataset,
     resampleResults <- lapply(
       1:length(trainIndexes),
       function (resampleIndex) {
+        
+        print(paste("resample iteration:", resampleIndex))
+        
         computePerformanceForResampleInstance(
           featureSelectionMethod,
           dataset,

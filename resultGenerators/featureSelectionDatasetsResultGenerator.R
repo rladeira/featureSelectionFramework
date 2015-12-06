@@ -31,6 +31,10 @@ featureSelectionDatasetsResultGenerator <- function(datasets,
   ## Compute feature selection performance for each of the datasets.
   for (dataset in datasets) {
     
+    # to avoid a annoying warning related to some row.names duplicated,
+    # which happens due to bootstrap resampling.
+    rownames(dataset$X) <- NULL
+    
     trainIndexes <- createResample(dataset$Y, times = nResamples)
     testIndexes <- lapply(trainIndexes,
                           function(training, allSamples)

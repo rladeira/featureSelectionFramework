@@ -60,6 +60,8 @@ generateResults <- function(dataset,
                 "for dataset",
                 dataset$name))
     
+    customAllowParallel <- grepl("SFS|SFFS", featureSelectionMethodName) && allowParallel
+    
     ## perform the feature selection using the current method
     elapsedSeconds <- timeOperation( 
       function() {
@@ -67,7 +69,8 @@ generateResults <- function(dataset,
           featureSelectionResult <<- selectFeaturesAndAssess(
             featureSelectionMethod, dataset,
             assessmentClassifiers, summaryFunction,
-            trainIndexes, testIndexes, allowParallel)
+            trainIndexes, testIndexes, 
+            allowParallel = customAllowParallel)
         })
       })
     

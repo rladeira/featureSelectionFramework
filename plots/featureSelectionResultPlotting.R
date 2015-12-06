@@ -90,9 +90,9 @@ addCustomDescriptionToPlots <- function(timePlot, metricsPlots) {
     giniDesirabilityPlot +
     xlab("Métodos de seleção de características") +
     ylab("Gini Index desirability score") +
-    ggtitle("") +
-    geom_hline(yintercept = 0.99, linetype = 2, color = "red") +
-    geom_vline(xintercept = 15.5, linetype = 2,color = "blue")
+    ggtitle("") #+
+    #geom_hline(yintercept = 0.99, linetype = 2, color = "red") +
+    #geom_vline(xintercept = 15.5, linetype = 2,color = "blue")
   
   print(giniDesirabilityPlot)
   
