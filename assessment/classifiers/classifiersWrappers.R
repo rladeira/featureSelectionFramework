@@ -13,32 +13,7 @@ ldaWrapper <- function(trainIndexes,
                  dataset$Y,
                  trainIndexes,
                  testIndexes)
-  
-#   if (length(selectedFeatures) > 1) {
-#     
-#     dataPreProcess <- preProcess(p$trainData, method = c("YeoJohnson", "center", "scale"))
-#     p$trainData <- predict(dataPreProcess, p$trainData)
-#     p$testData <- predict(dataPreProcess, p$testData)
-#     
-#     nzvTrain <- nearZeroVar(p$trainData, freqCut = 85/15)
-#     nzvTest <- nearZeroVar(p$testData, freqCut = 85/15)
-#     nzv <- union(nzvTrain, nzvTest)
-#     if (length(nzv) > 0) {
-#       p$trainData <- p$trainData[, -nzv]
-#       p$testData <- p$testData[, -nzv]
-#     }
-#     
-#     trainCor <- cor(p$trainData)
-#     hcTrain <- findCorrelation(trainCor)
-#     testCor <- cor(p$testData)
-#     hcTest <- findCorrelation(testCor)
-#     highCor <- union(hcTrain, hcTest)
-#     if (length(highCor) > 0) {
-#       p$trainData <- p$trainData[, -highCor]
-#       p$testData <- p$testData[, -highCor]
-#     }
-#   }
-  
+
   model <- lda(p$trainData,
                p$trainLabels,
                tol = 1.0e-6)
