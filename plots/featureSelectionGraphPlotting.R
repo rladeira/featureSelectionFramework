@@ -80,12 +80,12 @@ createFeatureSelectionGraph <- function(nFeatures) {
 
 ########################## Single node neighborhood ############################################
 
-# emptyStateEncoding <- rep(0, 10)
-# expansion <- expandNode(emptyStateEncoding)
-# fsEdges <- expansion$edges
-# 
-# G <- make_graph(fsEdges, directed = FALSE)
-# plot(G, vertex.size = 25)
+emptyStateEncoding <- rep(0, 10)
+expansion <- expandNode(emptyStateEncoding)
+fsEdges <- expansion$edges
+
+G <- make_graph(fsEdges, directed = FALSE)
+plot(G, vertex.size = 25)
 
 ########################## Complete Graph plotting #############################################
 
