@@ -37,33 +37,8 @@ featureSelectionMethods <- c(
   fSelectorMethods,
   clusterIndexesFeatureSelectionMethods)
 
-datasets <- list(breastCancer_#,
-#                  cassini_,
-#                  circle_,
-#                  cuboids_,
-#                  dna_,
-#                  gaussian_,
-#                  glass_,
-#                  houseVotes84_,
-#                  hypercube_,
-#                  ionosphere_,
-#                  ringnorm_,
-#                  satellite_,
-#                  shapes_,
-#                  simplex_,
-#                  smiley_,
-#                  sonar_,
-#                  spamBase_,
-#                  spirals_,
-#                  steelPlatesFaults_,
-#                  threeNorm_,
-#                  titanic_,
-#                  twoMoons_,
-#                  twoNorm_,
-#                  vehicle_,
-#                  waveform_,
-#                  xorDataSet_
-                 )
+datasets <- list(breastCancer_,
+                 sonar_)
 
 resultGenerator <- function() {
   result <<- featureSelectionDatasetsResultGenerator(
@@ -82,10 +57,8 @@ elapsedSeconds <- timeOperation(
     runWithCpuParallelBackend(resultGenerator)
   })
 
-timePlot <- barplotForElapsedMinutes(result)
-metricsPlots <- boxplotsForAllMetrics(result)
-
-addCustomDescriptionToPlots(timePlot, metricsPlots)
+barplotForElapsedMinutes(result)
+boxplotsForAllMetrics(result)
 
 plotDendrogram(clusteringResult$hclust)
 
