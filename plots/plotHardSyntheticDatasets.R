@@ -6,6 +6,7 @@ library(caret)
 library(rDatasets)
 library(AppliedPredictiveModeling)
 library(rgl)
+library(scatterplot3d)
 
 plot2dHardDatasets <- function() {
   
@@ -67,6 +68,16 @@ plot3dHardDatasets <- function() {
          col = customColors[1:4][as.integer(cuboids_$Y)],
          size = 4)
   
+  scatterplot3d(cuboids_$X[,1],
+                cuboids_$X[,2],
+                cuboids_$X[,3],
+                xlab = "Feature 1",
+                ylab = "Feature 2",
+                zlab = "Feature 3",
+                main = paste(gsub("_", " ", cuboids_$name), "Benchmark"),
+                color = customColors[1:4][as.integer(cuboids_$Y)],
+                pch = 19)
+  
   my_settings <- list(superpose.symbol=list(col = customColors, 
                                             fill = customColors,
                                             cex = rep(0.8, 8)))
@@ -90,8 +101,18 @@ plot3dHardDatasets <- function() {
          main = paste(gsub("_", " ", hypercube_$name), "Benchmark"),
          col = customColors[as.integer(hypercube_$Y)],
          size = 4)
+  
+  scatterplot3d(hypercube_$X[,1],
+                hypercube_$X[,2],
+                hypercube_$X[,3],
+                xlab = "Feature 1",
+                ylab = "Feature 2",
+                zlab = "Feature 3",
+                main = paste(gsub("_", " ", hypercube_$name), "Benchmark"),
+                color = customColors[as.integer(hypercube_$Y)],
+                pch = 19)
 }
 
-plot2dHardDatasets()
+#plot2dHardDatasets()
 plot3dHardDatasets()
 

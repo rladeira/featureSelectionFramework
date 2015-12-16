@@ -89,24 +89,27 @@ plot(G, vertex.size = 25)
 
 ########################## Complete Graph plotting #############################################
 
-plotFeatureSelectionGraph <- function(nFeatures) {
+plotFeatureSelectionGraph <- function(nFeatures, vertex.size = 1.5) {
   
   G <- createFeatureSelectionGraph(nFeatures)
   
   plot(G,
        vertex.label = NA,
-       vertex.size = 1.5,
+       vertex.size = vertex.size,
        #layout = layout.sphere(g),
        layout = layout.fruchterman.reingold(G),
        vertex.color="blue",
        main = paste(nFeatures, "características"))
 }
 
+#margin <- 2
+#par(mar=rep(margin, 4))
+
 par(mfrow=c(2,2))
 par(cex.main=3)
 
-plotFeatureSelectionGraph(nFeatures = 2)
-plotFeatureSelectionGraph(nFeatures = 4)
+plotFeatureSelectionGraph(nFeatures = 2, vertex.size = 40)
+plotFeatureSelectionGraph(nFeatures = 4, vertex.size = 10)
 plotFeatureSelectionGraph(nFeatures = 8)
 plotFeatureSelectionGraph(nFeatures = 12)
 
